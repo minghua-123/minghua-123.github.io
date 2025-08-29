@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minghua的个人主页 | Minghua's Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366F1', // 靛蓝色
+                        secondary: '#EC4899', // 粉红色
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-gradient {
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            .animate-float-delay {
+                animation: float 6s ease-in-out 2s infinite;
+            }
+            .animate-float-long {
+                animation: float 8s ease-in-out infinite;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-10px);
+            }
+            .cursor-dot {
+                width: 5px;
+                height: 5px;
+                background-color: theme('colors.primary');
+                border-radius: 50%;
+                position: fixed;
+                pointer-events: none;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s, height 0.2s;
+            }
+            .cursor-outline {
+                width: 30px;
+                height: 30px;
+                border: 2px solid theme('colors.primary');
+                border-radius: 50%;
+                position: fixed;
+                pointer-events: none;
+                z-index: 9998;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s, height 0.2s, opacity 0.2s;
+            }
+            .tool-link {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: #f0f0f0;
+            border-radius: 8px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+            }
+            .tool-link:hover {
+              background: #e0e0e0;
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+    
+
+<body class="font-inter bg-gradient-to-br from-gray-50 to-gray-100 text-dark dark:from-gray-900 dark:to-gray-800 dark:text-light min-h-screen">
+    <!-- 鼠标跟随元素 -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/80 dark:bg-dark/80 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gradient bg-gradient-to-r from-primary to-secondary">
+                <span data-i18n="name">Minghua</span>
+            </a>
+            
+            <!-- 桌面导航 -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="font-medium hover:text-primary transition-colors">
+                    <span data-i18n="nav.home">首页</span>
+                </a>
+                <a href="#about" class="font-medium hover:text-primary transition-colors">
+                    <span data-i18n="nav.about">关于</span>
+                </a>
+                <a href="#skills" class="font-medium hover:text-primary transition-colors">
+                    <span data-i18n="nav.skills">技能</span>
+                </a>
+                <a href="#projects" class="font-medium hover:text-primary transition-colors">
+                    <span data-i18n="nav.projects">项目</span>
+                </a>
+                <a href="#contact" class="font-medium hover:text-primary transition-colors">
+                    <span data-i18n="nav.contact">联系</span>
+                </a>
+                <!-- 语言切换 -->
+                <button id="lang-toggle" class="font-medium hover:text-primary transition-colors flex items-center">
+                    <span data-i18n="lang">EN</span>
+                    <i class="fa fa-globe ml-1"></i>
+                </button>
+            </div>
+            
+            <!-- 主题切换 -->
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fa fa-moon-o dark:hidden text-xl"></i>
+                <i class="fa fa-sun-o hidden dark:block text-xl"></i>
+            </button>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-dark shadow-lg">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#home" class="font-medium hover:text-primary transition-colors py-2">
+                    <span data-i18n="nav.home">首页</span>
+                </a>
+                <a href="#about" class="font-medium hover:text-primary transition-colors py-2">
+                    <span data-i18n="nav.about">关于</span>
+                </a>
+                <a href="#skills" class="font-medium hover:text-primary transition-colors py-2">
+                    <span data-i18n="nav.skills">技能</span>
+                </a>
+                <a href="#projects" class="font-medium hover:text-primary transition-colors py-2">
+                    <span data-i18n="nav.projects">项目</span>
+                </a>
+                <a href="#contact" class="font-medium hover:text-primary transition-colors py-2">
+                    <span data-i18n="nav.contact">联系</span>
+                </a>
+                <!-- 移动端语言切换 -->
+                <button id="mobile-lang-toggle" class="font-medium hover:text-primary transition-colors py-2 text-left">
+                    <span data-i18n="lang">切换语言 (EN)</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden relative">
+      <h2>🔧 我的工具箱</h2>
+      <a href="base64-converter_v4.html" class="tool-link" target="_blank">
+        🧩 Base64 编码/解码工具 v4
+      </a>
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0 z-10">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6">
+                        <span data-i18n="hero.greeting">你好，我是</span> <span class="text-gradient bg-gradient-to-r from-primary to-secondary">Minghua</span>
+                    </h1>
+                    <h2 class="text-[clamp(1.2rem,3vw,1.8rem)] text-gray-600 dark:text-gray-300 mb-8">
+                        <span data-i18n="hero.title">开发者 & 设计师</span>
+                    </h2>
+                    <p class="text-lg text-gray-700 dark:text-gray-200 mb-8 max-w-lg" data-i18n="hero.description">
+                        热衷于创造美观、实用且以用户为中心的数字体验。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#projects" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-primary/30 hover:shadow-xl">
+                            <span data-i18n="hero.cta1">查看我的作品</span>
+                        </a>
+                        <a href="#contact" class="px-8 py-3 border-2 border-primary text-primary hover:bg-primary/10 rounded-full font-medium transition-all">
+                            <span data-i18n="hero.cta2">联系我</span>
+                        </a>
+                    </div>
+                    
+                    <!-- 社交链接 -->
+                    <div class="mt-12 flex space-x-6">
+                        <a href="https://github.com/minghua-123" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="GitHub">
+                            <i class="fa fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="LinkedIn">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="Twitter">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="CodePen">
+                            <i class="fa fa-codepen"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 relative">
+                    <!-- 头像 -->
+                    <div class="relative z-10 rounded-full overflow-hidden border-8 border-white dark:border-dark shadow-2xl">
+                        <img src="https://picsum.photos/id/1005/400/400" alt="Minghua的个人照片" class="w-full h-auto max-w-[300px] mx-auto">
+                    </div>
+                    
+                    <!-- 装饰元素 -->
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
+                    
+                    <!-- 浮动形状 -->
+                    <div class="absolute top-1/4 -left-10 w-16 h-16 bg-primary/30 rounded-lg rotate-12 animate-float"></div>
+                    <div class="absolute bottom-1/3 -right-5 w-12 h-12 bg-secondary/30 rounded-full animate-float-delay"></div>
+                    <div class="absolute top-1/2 right-1/4 w-8 h-8 bg-primary/40 rounded-full animate-float-long"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 滚动指示器 -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#about" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" aria-label="向下滚动">
+                <i class="fa fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 关于部分 -->
+    <section id="about" class="py-20 bg-white dark:bg-dark shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="about.title">关于我</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-2/5 relative">
+                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-xl">
+                        <img src="https://picsum.photos/id/1076/600/800" alt="Minghua在项目中工作" class="w-full h-auto">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-40 h-40 bg-primary/10 rounded-full -z-10"></div>
+                    <div class="absolute -top-6 -left-6 w-40 h-40 bg-secondary/10 rounded-full -z-10"></div>
+                </div>
+                
+                <div class="md:w-3/5">
+                    <h3 class="text-2xl font-semibold mb-6" data-i18n="about.subtitle">我是一名充满激情的开发者，专注于创造数字体验</h3>
+                    <p class="text-gray-700 dark:text-gray-300 mb-6 text-lg" data-i18n="about.paragraph1">
+                        我是一名软件开发工程师，专注于创建美观、实用且用户友好的应用程序。凭借在Web开发方面的经验，我喜欢通过代码将想法变为现实。
+                    </p>
+                    <p class="text-gray-700 dark:text-gray-300 mb-8 text-lg" data-i18n="about.paragraph2">
+                        当我不编码时，你会发现我在探索新技术、为开源项目做贡献，或者在个人项目上工作以扩展我的技能。
+                    </p>
+                    
+                    <!-- 有趣的事实 -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
+                            <p class="text-4xl font-bold text-primary mb-2">50+</p>
+                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.projects">项目</p>
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
+                            <p class="text-4xl font-bold text-primary mb-2">5+</p>
+                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.years">年经验</p>
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
+                            <p class="text-4xl font-bold text-primary mb-2">10+</p>
+                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.technologies">技术</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-primary/30">
+                        <span data-i18n="about.resume">下载简历</span>
+                        <i class="fa fa-download ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能部分 -->
+    <section id="skills" class="py-20 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="skills.title">我的技能</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="skills.description">
+                    在我的职业生涯中，我使用过各种技术。以下是我的一些关键技能和专业知识。
+                </p>
+            </div>
+            
+            <!-- 技能标签页 -->
+            <div class="flex flex-wrap justify-center mb-12 gap-4">
+                <button class="skill-tab active px-6 py-2 rounded-full bg-primary text-white font-medium" data-tab="frontend">
+                    <span data-i18n="skills.tabs.frontend">前端</span>
+                </button>
+                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="backend">
+                    <span data-i18n="skills.tabs.backend">后端</span>
+                </button>
+                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="database">
+                    <span data-i18n="skills.tabs.database">数据库</span>
+                </button>
+                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="tools">
+                    <span data-i18n="skills.tabs.tools">工具</span>
+                </button>
+            </div>
+            
+            <!-- 技能内容 -->
+            <div class="skill-content active" id="frontend">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 技能卡片 -->
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-html5 text-2xl text-orange-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">HTML5</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.html5">
+                            熟练创建语义化、可访问且结构良好的HTML文档。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-css3 text-2xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">CSS3</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.css3">
+                            精通现代CSS技术，包括Flexbox、Grid、动画和响应式设计。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-js-square text-2xl text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">JavaScript</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.javascript">
+                            精通原生JavaScript、ES6+、DOM操作和异步编程。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-react text-2xl text-blue-400"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">React</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.react">
+                            使用React及其生态系统构建现代、响应式和交互式用户界面。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-bootstrap text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Bootstrap</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.bootstrap">
+                            使用Bootstrap框架及其组件快速创建响应式设计。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-paint-brush text-2xl text-pink-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">UI/UX设计</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.uiux">
+                            设计用户友好的界面，注重用户体验和可访问性。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-content hidden" id="backend">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 后端技能 -->
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-nodejs text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Node.js</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.nodejs">
+                            使用Node.js及其生态系统构建可扩展的服务器端应用程序。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-server text-2xl text-gray-700 dark:text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Express.js</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.express">
+                            使用Express.js框架创建健壮的API和Web应用程序。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-python text-2xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Python</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.python">
+                            使用Python编程语言开发后端服务和脚本。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 70%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-content hidden" id="database">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 数据库技能 -->
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-database text-2xl text-orange-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">MySQL</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.database.mysql">
+                            使用MySQL设计和管理关系型数据库。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-leaf text-2xl text-green-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">MongoDB</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.database.mongodb">
+                            使用MongoDB处理面向文档的数据库。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-content hidden" id="tools">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 工具技能 -->
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-github text-2xl text-gray-800 dark:text-gray-200"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Git & GitHub</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.git">
+                            精通版本控制、分支策略和协作工作流。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-terminal text-2xl text-gray-700 dark:text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">命令行</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.terminal">
+                            熟练使用命令行界面执行开发任务。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
+                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fa fa-cloud text-2xl text-blue-400"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">部署</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.deployment">
+                            将应用程序部署到各种平台，包括AWS、Heroku和Netlify。
+                        </p>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目部分 -->
+    <section id="projects" class="py-20 bg-white dark:bg-dark">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="projects.title">我的项目</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="projects.description">
+                    查看我的一些近期作品。这些项目展示了我在Web开发方面的技能和专业知识。
+                </p>
+            </div>
+            
+            <!-- 项目筛选 -->
+            <div class="flex flex-wrap justify-center mb-12 gap-4">
+                <button class="project-filter active px-6 py-2 rounded-full bg-primary text-white font-medium" data-filter="all">
+                    <span data-i18n="projects.filters.all">所有项目</span>
+                </button>
+                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="web">
+                    <span data-i18n="projects.filters.web">Web应用</span>
+                </button>
+                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="mobile">
+                    <span data-i18n="projects.filters.mobile">移动应用</span>
+                </button>
+                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="design">
+                    <span data-i18n="projects.filters.design">设计</span>
+                </button>
+            </div>
+            
+            <!-- 项目网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 项目1 -->
+                <div class="project-card group" data-category="web">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/180/600/400" alt="电子商务网站项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.ecommerce.name">电子商务平台</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.ecommerce.desc">
+                        一个功能齐全的电子商务网站，带有支付集成。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">React</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Node.js</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">MongoDB</span>
+                    </div>
+                </div>
+                
+                <!-- 项目2 -->
+                <div class="project-card group" data-category="mobile">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/160/600/400" alt="健身追踪应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.fitness.name">健身追踪应用</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.fitness.desc">
+                        一个用于跟踪锻炼和健身进度的移动应用。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">React Native</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Firebase</span>
+                    </div>
+                </div>
+                
+                <!-- 项目3 -->
+                <div class="project-card group" data-category="design">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/20/600/400" alt="UI设计项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.dashboard.name">仪表盘UI设计</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.dashboard.desc">
+                        具有数据可视化的现代仪表盘界面。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Figma</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Tailwind CSS</span>
+                    </div>
+                </div>
+                
+                <!-- 项目4 -->
+                <div class="project-card group" data-category="web">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/119/600/400" alt="博客平台项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.blog.name">博客平台</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.blog.desc">
+                        用于创建和管理博客文章的内容管理系统。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Django</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">PostgreSQL</span>
+                    </div>
+                </div>
+                
+                <!-- 项目5 -->
+                <div class="project-card group" data-category="mobile">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/169/600/400" alt="天气应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.weather.name">天气预报应用</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.weather.desc">
+                        提供实时天气信息的移动应用。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Flutter</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">API集成</span>
+                    </div>
+                </div>
+                
+                <!-- 项目6 -->
+                <div class="project-card group" data-category="web">
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
+                        <img src="https://picsum.photos/id/26/600/400" alt="任务管理应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                            <div class="p-6">
+                                <div class="flex space-x-4">
+                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
+                                        <i class="fa fa-link"></i>
+                                    </a>
+                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
+                                        <i class="fa fa-github"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.taskmanager.name">任务管理器</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.taskmanager.desc">
+                        用于管理任务和项目的生产力应用。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Vue.js</span>
+                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Firebase</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="https://github.com/minghua-123" target="_blank" class="inline-flex items-center px-8 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-dark dark:text-light rounded-full font-medium transition-all">
+                    <span data-i18n="projects.viewall">在GitHub上查看所有项目</span>
+                    <i class="fa fa-github ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系部分 -->
+    <section id="contact" class="py-20 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="contact.title">联系我</h2>
+                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="contact.description">
+                    有兴趣一起合作吗？在下面的表格中填写有关您项目的一些信息，我会尽快回复您。
+                </p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-1/2">
+                    <form class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                        <div class="mb-6">
+                            <label for="name" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.name">您的姓名</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="张三">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="email" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.email">邮箱地址</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="example@mail.com">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.subject">主题</label>
+                            <input type="text" id="subject" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="项目咨询">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.message">您的消息</label>
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors resize-none" placeholder="告诉我关于您的项目..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
+                            <span data-i18n="contact.form.submit">发送消息</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg h-full">
+                        <h3 class="text-2xl font-semibold mb-8" data-i18n="contact.info.title">联系信息</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fa fa-envelope text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.email">邮箱</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">
+                                        <a href="mailto:minghua@example.com" class="hover:text-primary transition-colors">minghua@example.com</a>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fa fa-map-marker text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.location">地址</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" data-i18n="contact.info.locationDetail">
+                                        中国北京市
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fa fa-clock-o text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.hours">工作时间</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" data-i18n="contact.info.hoursDetail">
+                                        周一至周五: 9:00 - 18:00
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-12">
+                            <h3 class="text-xl font-semibold mb-6" data-i18n="contact.follow">关注我</h3>
+                            <div class="flex space-x-4">
+                                <a href="https://github.com/minghua-123" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="GitHub">
+                                    <i class="fa fa-github text-xl"></i>
+                                </a>
+                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="Twitter">
+                                    <i class="fa fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="Instagram">
+                                    <i class="fa fa-instagram text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark dark:bg-gray-950 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <a href="#" class="text-2xl font-bold text-gradient bg-gradient-to-r from-primary to-secondary mb-6 md:mb-0">
+                    <span data-i18n="name">Minghua</span>
+                </a>
+                
+                <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+                    <a href="#home" class="hover:text-primary transition-colors">
+                        <span data-i18n="nav.home">首页</span>
+                    </a>
+                    <a href="#about" class="hover:text-primary transition-colors">
+                        <span data-i18n="nav.about">关于</span>
+                    </a>
+                    <a href="#skills" class="hover:text-primary transition-colors">
+                        <span data-i18n="nav.skills">技能</span>
+                    </a>
+                    <a href="#projects" class="hover:text-primary transition-colors">
+                        <span data-i18n="nav.projects">项目</span>
+                    </a>
+                    <a href="#contact" class="hover:text-primary transition-colors">
+                        <span data-i18n="nav.contact">联系</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0" data-i18n="footer.copyright">
+                    &copy; 2025 Minghua. 保留所有权利。
+                </p>
+                
+                <p class="text-gray-400" data-i18n="footer.design">
+                    用 <i class="fa fa-heart text-secondary"></i> 设计和开发
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary hover:bg-primary/90 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform transition-all duration-300 opacity-0 translate-y-10" aria-label="返回顶部">
+        <i class="fa fa-chevron-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // 国际化文本数据
+        const translations = {
+            en: {
+                "name": "Minghua",
+                "nav.home": "Home",
+                "nav.about": "About",
+                "nav.skills": "Skills",
+                "nav.projects": "Projects",
+                "nav.contact": "Contact",
+                "lang": "中文",
+                "hero.greeting": "Hi, I'm",
+                "hero.title": "Developer & Designer",
+                "hero.description": "Passionate about creating beautiful, functional, and user-centered digital experiences.",
+                "hero.cta1": "View My Work",
+                "hero.cta2": "Get In Touch",
+                "about.title": "About Me",
+                "about.subtitle": "I'm a passionate developer creating digital experiences",
+                "about.paragraph1": "I'm a software developer with a focus on creating beautiful, functional, and user-friendly applications. With experience in web development, I love turning ideas into reality through code.",
+                "about.paragraph2": "When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or working on personal projects to expand my skills.",
+                "about.stats.projects": "Projects",
+                "about.stats.years": "Years",
+                "about.stats.technologies": "Technologies",
+                "about.resume": "Download Resume",
+                "skills.title": "My Skills",
+                "skills.description": "I've worked with a variety of technologies throughout my career. Here are some of my key skills and expertise.",
+                "skills.tabs.frontend": "Frontend",
+                "skills.tabs.backend": "Backend",
+                "skills.tabs.database": "Database",
+                "skills.tabs.tools": "Tools",
+                "skills.frontend.html5": "Proficient in creating semantic, accessible, and well-structured HTML documents.",
+                "skills.frontend.css3": "Skilled in modern CSS techniques, including Flexbox, Grid, animations, and responsive design.",
+                "skills.frontend.javascript": "Experienced in vanilla JavaScript, ES6+, DOM manipulation, and asynchronous programming.",
+                "skills.frontend.react": "Building modern, responsive, and interactive user interfaces with React and its ecosystem.",
+                "skills.frontend.bootstrap": "Creating responsive designs quickly using Bootstrap framework and its components.",
+                "skills.frontend.uiux": "Designing user-friendly interfaces with a focus on user experience and accessibility.",
+                "skills.backend.nodejs": "Building scalable server-side applications with Node.js and its ecosystem.",
+                "skills.backend.express": "Creating robust APIs and web applications with Express.js framework.",
+                "skills.backend.python": "Developing backend services and scripts with Python programming language.",
+                "skills.database.mysql": "Designing and managing relational databases with MySQL.",
+                "skills.database.mongodb": "Working with document-oriented databases using MongoDB.",
+                "skills.tools.git": "Proficient in version control, branching strategies, and collaborative workflows.",
+                "skills.tools.terminal": "Comfortable working with command line interfaces for development tasks.",
+                "skills.tools.deployment": "Deploying applications to various platforms including AWS, Heroku, and Netlify.",
+                "projects.title": "My Projects",
+                "projects.description": "Check out some of my recent work. These projects showcase my skills and expertise in web development.",
+                "projects.filters.all": "All Projects",
+                "projects.filters.web": "Web Apps",
+                "projects.filters.mobile": "Mobile Apps",
+                "projects.filters.design": "Design",
+                "projects.items.ecommerce.name": "E-commerce Platform",
+                "projects.items.ecommerce.desc": "A fully functional e-commerce website with payment integration.",
+                "projects.items.fitness.name": "Fitness Tracker App",
+                "projects.items.fitness.desc": "A mobile app for tracking workouts and fitness progress.",
+                "projects.items.dashboard.name": "Dashboard UI Design",
+                "projects.items.dashboard.desc": "A modern dashboard interface with data visualization.",
+                "projects.items.blog.name": "Blog Platform",
+                "projects.items.blog.desc": "A content management system for creating and managing blog posts.",
+                "projects.items.weather.name": "Weather Forecast App",
+                "projects.items.weather.desc": "A mobile app that provides real-time weather information.",
+                "projects.items.taskmanager.name": "Task Manager",
+                "projects.items.taskmanager.desc": "A productivity app for managing tasks and projects.",
+                "projects.viewall": "View All Projects on GitHub",
+                "contact.title": "Get In Touch",
+                "contact.description": "Interested in working together? Fill out the form below with some info about your project, and I'll get back to you as soon as I can.",
+                "contact.form.name": "Your Name",
+                "contact.form.email": "Email Address",
+                "contact.form.subject": "Subject",
+                "contact.form.message": "Your Message",
+                "contact.form.submit": "Send Message",
+                "contact.info.title": "Contact Information",
+                "contact.info.email": "Email",
+                "contact.info.location": "Location",
+                "contact.info.locationDetail": "Beijing, China",
+                "contact.info.hours": "Working Hours",
+                "contact.info.hoursDetail": "Monday - Friday: 9AM - 6PM",
+                "contact.follow": "Follow Me",
+                "footer.copyright": "&copy; 2025 Minghua. All rights reserved.",
+                "footer.design": "Designed & Built with <i class='fa fa-heart text-secondary'></i>"
+            },
+            zh: {
+                "name": "Minghua",
+                "nav.home": "首页",
+                "nav.about": "关于",
+                "nav.skills": "技能",
+                "nav.projects": "项目",
+                "nav.contact": "联系",
+                "lang": "EN",
+                "hero.greeting": "你好，我是",
+                "hero.title": "开发者 & 设计师",
+                "hero.description": "热衷于创造美观、实用且以用户为中心的数字体验。",
+                "hero.cta1": "查看我的作品",
+                "hero.cta2": "联系我",
+                "about.title": "关于我",
+                "about.subtitle": "我是一名充满激情的开发者，专注于创造数字体验",
+                "about.paragraph1": "我是一名软件开发工程师，专注于创建美观、实用且用户友好的应用程序。凭借在Web开发方面的经验，我喜欢通过代码将想法变为现实。",
+                "about.paragraph2": "当我不编码时，你会发现我在探索新技术、为开源项目做贡献，或者在个人项目上工作以扩展我的技能。",
+                "about.stats.projects": "项目",
+                "about.stats.years": "年经验",
+                "about.stats.technologies": "技术",
+                "about.resume": "下载简历",
+                "skills.title": "我的技能",
+                "skills.description": "在我的职业生涯中，我使用过各种技术。以下是我的一些关键技能和专业知识。",
+                "skills.tabs.frontend": "前端",
+                "skills.tabs.backend": "后端",
+                "skills.tabs.database": "数据库",
+                "skills.tabs.tools": "工具",
+                "skills.frontend.html5": "熟练创建语义化、可访问且结构良好的HTML文档。",
+                "skills.frontend.css3": "精通现代CSS技术，包括Flexbox、Grid、动画和响应式设计。",
+                "skills.frontend.javascript": "精通原生JavaScript、ES6+、DOM操作和异步编程。",
+                "skills.frontend.react": "使用React及其生态系统构建现代、响应式和交互式用户界面。",
+                "skills.frontend.bootstrap": "使用Bootstrap框架及其组件快速创建响应式设计。",
+                "skills.frontend.uiux": "设计用户友好的界面，注重用户体验和可访问性。",
+                "skills.backend.nodejs": "使用Node.js及其生态系统构建可扩展的服务器端应用程序。",
+                "skills.backend.express": "使用Express.js框架创建健壮的API和Web应用程序。",
+                "skills.backend.python": "使用Python编程语言开发后端服务和脚本。",
+                "skills.database.mysql": "使用MySQL设计和管理关系型数据库。",
+                "skills.database.mongodb": "使用MongoDB处理面向文档的数据库。",
+                "skills.tools.git": "精通版本控制、分支策略和协作工作流。",
+                "skills.tools.terminal": "熟练使用命令行界面执行开发任务。",
+                "skills.tools.deployment": "将应用程序部署到各种平台，包括AWS、Heroku和Netlify。",
+                "projects.title": "我的项目",
+                "projects.description": "查看我的一些近期作品。这些项目展示了我在Web开发方面的技能和专业知识。",
+                "projects.filters.all": "所有项目",
+                "projects.filters.web": "Web应用",
+                "projects.filters.mobile": "移动应用",
+                "projects.filters.design": "设计",
+                "projects.items.ecommerce.name": "电子商务平台",
+                "projects.items.ecommerce.desc": "一个功能齐全的电子商务网站，带有支付集成。",
+                "projects.items.fitness.name": "健身追踪应用",
+                "projects.items.fitness.desc": "一个用于跟踪锻炼和健身进度的移动应用。",
+                "projects.items.dashboard.name": "仪表盘UI设计",
+                "projects.items.dashboard.desc": "具有数据可视化的现代仪表盘界面。",
+                "projects.items.blog.name": "博客平台",
+                "projects.items.blog.desc": "用于创建和管理博客文章的内容管理系统。",
+                "projects.items.weather.name": "天气预报应用",
+                "projects.items.weather.desc": "提供实时天气信息的移动应用。",
+                "projects.items.taskmanager.name": "任务管理器",
+                "projects.items.taskmanager.desc": "用于管理任务和项目的生产力应用。",
+                "projects.viewall": "在GitHub上查看所有项目",
+                "contact.title": "联系我",
+                "contact.description": "有兴趣一起合作吗？在下面的表格中填写有关您项目的一些信息，我会尽快回复您。",
+                "contact.form.name": "您的姓名",
+                "contact.form.email": "邮箱地址",
+                "contact.form.subject": "主题",
+                "contact.form.message": "您的消息",
+                "contact.form.submit": "发送消息",
+                "contact.info.title": "联系信息",
+                "contact.info.email": "邮箱",
+                "contact.info.location": "地址",
+                "contact.info.locationDetail": "中国北京市",
+                "contact.info.hours": "工作时间",
+                "contact.info.hoursDetail": "周一至周五: 9:00 - 18:00",
+                "contact.follow": "关注我",
+                "footer.copyright": "&copy; 2025 Minghua. 保留所有权利。",
+                "footer.design": "用 <i class='fa fa-heart text-secondary'></i> 设计和开发"
+            }
+        };
+
+        // 当前语言
+        let currentLang = 'zh';
+        
+        // 切换语言函数
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            
+            // 更新所有翻译文本
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    element.innerHTML = translations[currentLang][key];
+                }
+            });
+            
+            // 更新页面语言属性
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+        }
+        
+        // 语言切换按钮事件
+        document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
+        document.getElementById('mobile-lang-toggle').addEventListener('click', toggleLanguage);
+
+        // 鼠标跟随效果
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            
+            // 小点跟随鼠标
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            
+            // 延迟更新大圈位置，创造跟随效果
+            setTimeout(() => {
+                cursorOutline.style.left = `${posX}px`;
+                cursorOutline.style.top = `${posY}px`;
+            }, 100);
+        });
+        
+        // 鼠标悬停在链接上时改变光标大小
+        const interactiveElements = document.querySelectorAll('a, button, .project-card, .skill-tab, .project-filter');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursorDot.style.width = '8px';
+                cursorDot.style.height = '8px';
+                cursorOutline.style.width = '50px';
+                cursorOutline.style.height = '50px';
+                cursorOutline.style.opacity = '0.5';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursorDot.style.width = '5px';
+                cursorDot.style.height = '5px';
+                cursorOutline.style.width = '30px';
+                cursorOutline.style.height = '30px';
+                cursorOutline.style.opacity = '1';
+            });
+        });
+
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 点击链接时关闭移动端菜单
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        
+        // 主题切换 - 修复版本
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        // 检查保存的主题偏好或使用系统偏好
+        function applySavedTheme() {
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                htmlElement.classList.add('dark');
+            } else {
+                htmlElement.classList.remove('dark');
+            }
+        }
+        
+        // 初始应用主题
+        applySavedTheme();
+        
+        themeToggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            
+            // 保存主题偏好
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // 技能标签页
+        const skillTabs = document.querySelectorAll('.skill-tab');
+        const skillContents = document.querySelectorAll('.skill-content');
+        
+        skillTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签和内容的活动类
+                skillTabs.forEach(t => {
+                    t.classList.remove('active', 'bg-primary', 'text-white');
+                    t.classList.add('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
+                });
+                
+                skillContents.forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                
+                // 为点击的标签和相应内容添加活动类
+                tab.classList.add('active', 'bg-primary', 'text-white');
+                tab.classList.remove('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
+                
+                const tabId = tab.getAttribute('data-tab');
+                const activeContent = document.getElementById(tabId);
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('active');
+            });
+        });
+        
+        // 项目筛选
+        const projectFilters = document.querySelectorAll('.project-filter');
+        const projectCards = document.querySelectorAll('.project-card');
+        
+        projectFilters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                // 移除所有筛选器的活动类
+                projectFilters.forEach(f => {
+                    f.classList.remove('active', 'bg-primary', 'text-white');
+                    f.classList.add('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
+                });
+                
+                // 为点击的筛选器添加活动类
+                filter.classList.add('active', 'bg-primary', 'text-white');
+                filter.classList.remove('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
+                
+                const filterValue = filter.getAttribute('data-filter');
+                
+                // 根据筛选器显示/隐藏项目
+                projectCards.forEach(card => {
+                    if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-md');
+                navbar.classList.remove('py-4', 'shadow-sm');
+                
+                backToTopButton.classList.remove('opacity-0', 'translate-y-10');
+                backToTopButton.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                navbar.classList.add('py-4', 'shadow-sm');
+                navbar.classList.remove('py-2', 'shadow-md');
+                
+                backToTopButton.classList.add('opacity-0', 'translate-y-10');
+                backToTopButton.classList.remove('opacity-100', 'translate-y-0');
+            }
+        });
+        
+        // 锚点链接平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 返回顶部按钮
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 表单提交
+        const contactForm = document.querySelector('#contact form');
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // 在实际实现中，你会将表单数据发送到服务器
+                alert(currentLang === 'zh' ? '感谢您的留言！我会尽快回复您。' : 'Thank you for your message! I will get back to you soon.');
+                contactForm.reset();
+            });
+        }
+    </script>
+</body>
+</html>
+    
