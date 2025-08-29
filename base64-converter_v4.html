@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能Base64转换器 (带API支持)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        success: '#52C41A',
+                        warning: '#FAAD14',
+                        danger: '#FF4D4F',
+                        dark: {
+                            100: '#374151',
+                            200: '#1F2937',
+                            300: '#111827',
+                        },
+                        light: {
+                            100: '#F9FAFB',
+                            200: '#F3F4F6',
+                            300: '#E5E7EB',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        'glow': '0 0 15px rgba(22, 93, 255, 0.5)',
+                    }
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thumb-rounded {
+                scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #165DFF 0%, #36CFC9 100%);
+            }
+            .mouse-trail {
+                position: fixed;
+                pointer-events: none;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 9999;
+                background: radial-gradient(circle, rgba(22,93,255,0.2) 0%, rgba(22,93,255,0) 70%);
+                transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+                opacity: 0;
+            }
+        }
+
+        /* 深色模式样式 */
+        body.dark-mode {
+            background-color: theme('colors.dark.300');
+            color: theme('colors.light.100');
+        }
+        
+        body.dark-mode .bg-white {
+            background-color: theme('colors.dark.200');
+        }
+        
+        body.dark-mode .bg-gray-50 {
+            background-color: theme('colors.dark.300');
+        }
+        
+        body.dark-mode .bg-gray-100 {
+            background-color: theme('colors.dark.200');
+        }
+        
+        body.dark-mode .text-gray-700,
+        body.dark-mode .text-gray-800 {
+            color: theme('colors.light.100');
+        }
+        
+        body.dark-mode .text-gray-600 {
+            color: theme('colors.light.200');
+        }
+        
+        body.dark-mode .text-gray-500 {
+            color: theme('colors.light.300');
+        }
+        
+        body.dark-mode .border-gray-200,
+        body.dark-mode .border-gray-300 {
+            border-color: theme('colors.dark.100');
+        }
+        
+        body.dark-mode .bg-blue-50 {
+            background-color: rgba(22, 93, 255, 0.1);
+        }
+        
+        body.dark-mode .bg-gray-50 {
+            background-color: theme('colors.dark.200');
+        }
+        
+        body.dark-mode .hover:bg-gray-200 {
+            background-color: theme('colors.dark.100');
+        }
+        
+        body.dark-mode .hover:bg-primary/5 {
+            background-color: rgba(22, 93, 255, 0.1);
+        }
+        
+        body.dark-mode .hover:bg-danger/5 {
+            background-color: rgba(255, 77, 79, 0.1);
+        }
+        
+        body.dark-mode .border-dashed {
+            border-color: theme('colors.dark.100');
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark-200 min-h-screen flex flex-col transition-all-300">
+    <!-- 鼠标追踪元素 -->
+    <div id="mouse-trail" class="mouse-trail w-32 h-32"></div>
+
+    <!-- 顶部导航栏 -->
+    <header class="gradient-bg text-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                    <i class="fa fa-exchange text-3xl text-white/90"></i>
+                    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-shadow">Base64转换器</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-white/20 transition-all-300">
+                        <i class="fa fa-moon-o text-xl"></i>
+                    </button>
+                    <button id="help-btn" class="p-2 rounded-full hover:bg-white/20 transition-all-300">
+                        <i class="fa fa-question-circle text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="mt-2 text-white/80 max-w-2xl">支持文件与Base64编码的双向转换，提供API接口支持</p>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- API接口说明 -->
+        <div class="mb-8 bg-blue-50 border-l-4 border-primary p-4 rounded-r-lg">
+            <h2 class="text-lg font-semibold text-primary flex items-center">
+                <i class="fa fa-code mr-2"></i>API接口支持
+            </h2>
+            <p class="mt-2 text-gray-700 text-sm">
+                可通过URL参数调用API: 
+                <code class="bg-white px-1 py-0.5 rounded text-primary">?text=内容&action=encode</code> 或 
+                <code class="bg-white px-1 py-0.5 rounded text-primary">?text=Base64内容&action=decode</code>
+            </p>
+        </div>
+
+        <!-- 转换模式选择 -->
+        <div class="mb-8 bg-white rounded-xl shadow-card p-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <h2 class="text-xl font-semibold text-gray-800">转换模式</h2>
+                <div class="flex bg-gray-100 rounded-lg p-1">
+                    <button id="mode-file-to-base64" class="px-6 py-2 rounded-md bg-primary text-white font-medium transition-all-300">
+                        <i class="fa fa-file-o mr-2"></i>文件转Base64
+                    </button>
+                    <button id="mode-base64-to-file" class="px-6 py-2 rounded-md text-gray-700 font-medium hover:bg-gray-200 transition-all-300">
+                        <i class="fa fa-code mr-2"></i>Base64转文件
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 输入输出区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 输入区域 -->
+            <div class="bg-white rounded-xl shadow-card overflow-hidden transition-all-300 hover:shadow-hover">
+                <div class="p-4 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fa fa-input text-primary mr-2"></i>输入
+                    </h3>
+                </div>
+                
+                <!-- 文件输入区域 (默认显示) -->
+                <div id="file-input-container" class="p-6">
+                    <!-- 文本/URL输入框 -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">文本/URL输入:</label>
+                        <textarea id="text-url-input" class="w-full h-20 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all-300 resize-none" placeholder="在此粘贴文本内容或文件URL..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-2 mb-6">
+                        <button id="process-text-btn" class="flex-1 px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-all-300">
+                            <i class="fa fa-file-text-o mr-1"></i>处理文本
+                        </button>
+                        <button id="process-url-btn" class="flex-1 px-4 py-2 bg-secondary text-white rounded hover:bg-secondary/90 transition-all-300">
+                            <i class="fa fa-link mr-1"></i>加载URL
+                        </button>
+                    </div>
+
+                    <!-- 拖放区域 -->
+                    <div id="drop-area" class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center mb-6 hover:border-primary transition-all-300">
+                        <i class="fa fa-cloud-upload text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2">拖放文件到此处，或</p>
+                        <label class="inline-block bg-primary text-white font-medium py-2 px-6 rounded-md cursor-pointer hover:bg-primary/90 transition-all-300">
+                            <i class="fa fa-folder-open mr-2"></i>选择文件
+                            <input type="file" id="file-input" class="hidden" accept="*/*" multiple>
+                        </label>
+                        <p class="text-xs text-gray-500 mt-4">支持图片、文档等多种格式</p>
+                    </div>
+
+                    <!-- 其他输入方式 -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button id="paste-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-all-300">
+                            <i class="fa fa-clipboard text-2xl text-primary mb-2"></i>
+                            <span class="text-sm">粘贴</span>
+                        </button>
+                        <button id="screenshot-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-all-300">
+                            <i class="fa fa-camera text-2xl text-primary mb-2"></i>
+                            <span class="text-sm">截图</span>
+                        </button>
+                        <button id="url-dialog-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-all-300">
+                            <i class="fa fa-external-link text-2xl text-primary mb-2"></i>
+                            <span class="text-sm">URL对话框</span>
+                        </button>
+                        <button id="clear-input-btn" class="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-danger hover:bg-danger/5 transition-all-300">
+                            <i class="fa fa-trash text-2xl text-danger mb-2"></i>
+                            <span class="text-sm">清空</span>
+                        </button>
+                    </div>
+
+                    <!-- 已选文件列表 -->
+                    <div id="file-list" class="mt-6 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded">
+                        <!-- 文件列表将在这里动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- Base64输入区域 (默认隐藏) -->
+                <div id="base64-input-container" class="p-6 hidden">
+                    <div class="mb-4">
+                        <label for="base64-input" class="block text-sm font-medium text-gray-700 mb-1">Base64编码:</label>
+                        <textarea id="base64-input" class="w-full h-60 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all-300 resize-none scrollbar-thin scrollbar-thumb-rounded" placeholder="粘贴Base64编码到这里..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="file-type-select" class="block text-sm font-medium text-gray-700 mb-1">文件类型:</label>
+                        <select id="file-type-select" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all-300">
+                            <option value="image/png">图片 (PNG)</option>
+                            <option value="image/jpeg">图片 (JPG)</option>
+                            <option value="image/gif">图片 (GIF)</option>
+                            <option value="application/pdf">文档 (PDF)</option>
+                            <option value="text/plain">文本 (TXT)</option>
+                            <option value="application/json">JSON</option>
+                            <option value="application/zip">压缩包 (ZIP)</option>
+                            <option value="custom">自定义...</option>
+                        </select>
+                        <input type="text" id="custom-mime-type" class="w-full mt-2 p-2 border border-gray-300 rounded-lg hidden" placeholder="例如: application/vnd.ms-excel">
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="clear-base64-btn" class="px-4 py-2 text-danger hover:text-danger/80 transition-all-300">
+                            <i class="fa fa-trash mr-1"></i>清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输出区域 -->
+            <div class="bg-white rounded-xl shadow-card overflow-hidden transition-all-300 hover:shadow-hover">
+                <div class="p-4 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fa fa-output text-primary mr-2"></i>输出
+                        <span id="output-status" class="ml-2 text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700 hidden"></span>
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <!-- 转换按钮 -->
+                    <div class="mb-6 text-center">
+                        <button id="convert-btn" class="px-8 py-3 bg-primary text-white font-medium rounded-md shadow-md hover:bg-primary/90 active:scale-95 transition-all-300 flex items-center justify-center mx-auto">
+                            <i class="fa fa-refresh mr-2"></i>开始转换
+                        </button>
+                    </div>
+
+                    <!-- 输出内容区域 -->
+                    <div id="output-container" class="min-h-60 border border-gray-200 rounded-lg p-4 overflow-hidden">
+                        <div id="output-placeholder" class="h-full flex flex-col items-center justify-center text-gray-400">
+                            <i class="fa fa-file-text-o text-5xl mb-4"></i>
+                            <p>转换结果将显示在这里</p>
+                        </div>
+                        
+                        <!-- Base64输出 (默认隐藏) -->
+                        <div id="base64-output-container" class="hidden">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Base64编码:</span>
+                                <div class="text-xs text-gray-500" id="base64-stats"></div>
+                            </div>
+                            <textarea id="base64-output" class="w-full h-52 p-3 border border-gray-300 rounded-lg bg-gray-50 readonly resize-none scrollbar-thin scrollbar-thumb-rounded" readonly></textarea>
+                            <div class="flex justify-end mt-2 space-x-2">
+                                <button id="copy-base64-btn" class="px-4 py-1.5 bg-success text-white text-sm rounded hover:bg-success/90 transition-all-300">
+                                    <i class="fa fa-copy mr-1"></i>复制
+                                </button>
+                                <button id="download-base64-btn" class="px-4 py-1.5 bg-primary text-white text-sm rounded hover:bg-primary/90 transition-all-300">
+                                    <i class="fa fa-download mr-1"></i>下载TXT
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 文件输出 (默认隐藏) -->
+                        <div id="file-output-container" class="hidden">
+                            <div id="file-preview" class="mb-4 max-h-40 flex items-center justify-center overflow-hidden">
+                                <!-- 预览将在这里显示 -->
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg mb-4">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700">文件名:</span>
+                                    <span id="output-filename" class="text-sm text-gray-600">file</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700">文件类型:</span>
+                                    <span id="output-filetype" class="text-sm text-gray-600"></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">文件大小:</span>
+                                    <span id="output-filesize" class="text-sm text-gray-600"></span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center">
+                                <button id="download-file-btn" class="px-6 py-2 bg-primary text-white rounded hover:bg-primary/90 transition-all-300">
+                                    <i class="fa fa-download mr-2"></i>下载文件
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- API响应输出区域 -->
+                        <div id="api-response-container" class="hidden">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">API响应:</span>
+                            </div>
+                            <pre id="api-response" class="w-full h-52 p-3 border border-gray-300 rounded-lg bg-gray-50 overflow-auto text-sm"></pre>
+                            <div class="flex justify-end mt-2">
+                                <button id="copy-api-response-btn" class="px-4 py-1.5 bg-success text-white text-sm rounded hover:bg-success/90 transition-all-300">
+                                    <i class="fa fa-copy mr-1"></i>复制响应
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API文档 -->
+        <div class="mt-10 bg-white rounded-xl shadow-card overflow-hidden">
+            <div class="p-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                    <i class="fa fa-book text-primary mr-2"></i>API接口文档
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="font-semibold text-lg mb-3 text-gray-800">基本信息</h4>
+                    <p class="text-gray-700 mb-2">接口地址: <code class="bg-gray-100 px-1 py-0.5 rounded">https://fb.gitxing.dpdns.org/base64-converter</code></p>
+                    <p class="text-gray-700">支持通过URL参数或JavaScript函数调用</p>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="font-semibold text-lg mb-3 text-gray-800">URL参数调用</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <h5 class="font-medium text-gray-800 mb-2">编码文本</h5>
+                        <p class="text-gray-700 mb-1">请求格式: <code class="bg-white px-1 py-0.5 rounded">?text=需要编码的文本&action=encode</code></p>
+                        <p class="text-gray-700">示例: <code class="bg-white px-1 py-0.5 rounded">?text=HelloWorld&action=encode</code></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-medium text-gray-800 mb-2">解码Base64</h5>
+                        <p class="text-gray-700 mb-1">请求格式: <code class="bg-white px-1 py-0.5 rounded">?text=Base64字符串&action=decode</code></p>
+                        <p class="text-gray-700">示例: <code class="bg-white px-1 py-0.5 rounded">?text=SGVsbG9Xb3JsZA==&action=decode</code></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-lg mb-3 text-gray-800">JavaScript函数调用</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700 mb-2">页面提供了全局函数可直接调用：</p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                            <li><code class="bg-white px-1 py-0.5 rounded">base64Encode(text)</code> - 编码文本为Base64</li>
+                            <li><code class="bg-white px-1 py-0.5 rounded">base64Decode(encodedText)</code> - 解码Base64为文本</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近转换记录 -->
+        <div class="mt-10 bg-white rounded-xl shadow-card overflow-hidden">
+            <div class="p-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                    <i class="fa fa-history text-primary mr-2"></i>最近转换记录
+                    <button id="clear-history" class="ml-auto text-sm text-gray-500 hover:text-danger transition-all-300">
+                        <i class="fa fa-trash-o mr-1"></i>清空记录
+                    </button>
+                </h3>
+            </div>
+            <div id="history-container" class="p-4 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded">
+                <div id="history-placeholder" class="text-center text-gray-400 py-8">
+                    暂无转换记录
+                </div>
+                <div id="history-list" class="space-y-2 hidden">
+                    <!-- 历史记录将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 帮助模态框 -->
+    <div id="help-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-4 shadow-xl">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800">使用帮助</h3>
+                    <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <h4 class="font-semibold text-lg mb-3 text-gray-800">文件转Base64</h4>
+                <ul class="list-disc pl-5 mb-6 space-y-2 text-gray-700">
+                    <li>拖放文件到输入区域</li>
+                    <li>点击"选择文件"按钮上传文件</li>
+                    <li>使用"粘贴"按钮粘贴剪贴板中的内容</li>
+                    <li>使用"截图"按钮捕获屏幕任意区域</li>
+                    <li>在文本框输入文本内容或URL，点击对应按钮处理</li>
+                    <li>点击"开始转换"生成Base64编码</li>
+                </ul>
+
+                <h4 class="font-semibold text-lg mb-3 text-gray-800">Base64转文件</h4>
+                <ul class="list-disc pl-5 mb-6 space-y-2 text-gray-700">
+                    <li>切换到"Base64转文件"模式</li>
+                    <li>粘贴Base64编码到输入框</li>
+                    <li>选择对应的文件类型</li>
+                    <li>点击"开始转换"生成文件</li>
+                    <li>点击"下载文件"保存结果</li>
+                </ul>
+
+                <h4 class="font-semibold text-lg mb-3 text-gray-800">API使用</h4>
+                <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                    <li>通过URL参数调用：?text=内容&action=encode|decode</li>
+                    <li>通过JavaScript函数调用：base64Encode()和base64Decode()</li>
+                    <li>所有API操作均在客户端完成，不会上传数据到服务器</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-dark-200 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 flex items-center z-50">
+        <i id="toast-icon" class="fa fa-check-circle mr-2"></i>
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark-200 text-white/80 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>Base64转换器 &copy; 2025 - 所有转换均在本地完成，保护您的隐私</p>
+            <p>Git_Xing 版权所有</p>
+            <p class="mt-2 text-sm text-white/60">支持多种文件格式的Base64编码与解码，提供API接口</p>
+        </div>
+    </footer>
+
+    <script>
+        // 全局API函数 - 供外部调用
+        window.base64Encode = function(text) {
+            try {
+                return btoa(unescape(encodeURIComponent(text)));
+            } catch (e) {
+                console.error('编码失败:', e);
+                return null;
+            }
+        };
+
+        window.base64Decode = function(encodedText) {
+            try {
+                return decodeURIComponent(escape(atob(encodedText)));
+            } catch (e) {
+                console.error('解码失败:', e);
+                return null;
+            }
+        };
+
+        // DOM元素
+        const modeFileToBase64Btn = document.getElementById('mode-file-to-base64');
+        const modeBase64ToFileBtn = document.getElementById('mode-base64-to-file');
+        const fileInputContainer = document.getElementById('file-input-container');
+        const base64InputContainer = document.getElementById('base64-input-container');
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const pasteBtn = document.getElementById('paste-btn');
+        const screenshotBtn = document.getElementById('screenshot-btn');
+        const urlBtn = document.getElementById('process-url-btn');
+        const urlDialogBtn = document.getElementById('url-dialog-btn');
+        const clearInputBtn = document.getElementById('clear-input-btn');
+        const fileList = document.getElementById('file-list');
+        const base64Input = document.getElementById('base64-input');
+        const fileTypeSelect = document.getElementById('file-type-select');
+        const customMimeType = document.getElementById('custom-mime-type');
+        const clearBase64Btn = document.getElementById('clear-base64-btn');
+        const convertBtn = document.getElementById('convert-btn');
+        const outputPlaceholder = document.getElementById('output-placeholder');
+        const base64OutputContainer = document.getElementById('base64-output-container');
+        const base64Output = document.getElementById('base64-output');
+        const base64Stats = document.getElementById('base64-stats');
+        const copyBase64Btn = document.getElementById('copy-base64-btn');
+        const downloadBase64Btn = document.getElementById('download-base64-btn');
+        const fileOutputContainer = document.getElementById('file-output-container');
+        const filePreview = document.getElementById('file-preview');
+        const outputFilename = document.getElementById('output-filename');
+        const outputFiletype = document.getElementById('output-filetype');
+        const outputFilesize = document.getElementById('output-filesize');
+        const downloadFileBtn = document.getElementById('download-file-btn');
+        const outputStatus = document.getElementById('output-status');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelp = document.getElementById('close-help');
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastMessage = document.getElementById('toast-message');
+        const historyContainer = document.getElementById('history-container');
+        const historyPlaceholder = document.getElementById('history-placeholder');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryBtn = document.getElementById('clear-history');
+        const themeToggle = document.getElementById('theme-toggle');
+        const textUrlInput = document.getElementById('text-url-input');
+        const processTextBtn = document.getElementById('process-text-btn');
+        const apiResponseContainer = document.getElementById('api-response-container');
+        const apiResponse = document.getElementById('api-response');
+        const copyApiResponseBtn = document.getElementById('copy-api-response-btn');
+        const mouseTrail = document.getElementById('mouse-trail');
+
+        // 全局变量
+        let selectedFiles = [];
+        let currentMode = 'file-to-base64';
+        let convertedFile = null;
+        let history = JSON.parse(localStorage.getItem('base64ConverterHistory') || '[]');
+        let isDarkMode = localStorage.getItem('base64ConverterDarkMode') === 'true';
+
+        // 初始化
+        function init() {
+            // 应用保存的主题设置
+            applyTheme();
+            renderHistory();
+            setupEventListeners();
+            setupMouseTrail();
+            handleApiRequest(); // 处理URL参数请求
+        }
+
+        // 应用主题设置
+        function applyTheme() {
+            const icon = themeToggle.querySelector('i');
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                icon.classList.remove('fa-moon-o');
+                icon.classList.add('fa-sun-o');
+            } else {
+                document.body.classList.remove('dark-mode');
+                icon.classList.remove('fa-sun-o');
+                icon.classList.add('fa-moon-o');
+            }
+        }
+
+        // 设置鼠标追踪效果
+        function setupMouseTrail() {
+            document.addEventListener('mousemove', (e) => {
+                // 更新鼠标追踪元素的位置
+                mouseTrail.style.left = `${e.clientX}px`;
+                mouseTrail.style.top = `${e.clientY}px`;
+                mouseTrail.style.opacity = '1';
+                
+                // 检查鼠标是否在交互元素上
+                const interactiveElements = document.querySelectorAll('button, a, input, textarea, select');
+                let isOverInteractive = false;
+                
+                interactiveElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && 
+                        e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        isOverInteractive = true;
+                    }
+                });
+                
+                // 根据鼠标位置调整追踪元素大小
+                if (isOverInteractive) {
+                    mouseTrail.style.width = '48px';
+                    mouseTrail.style.height = '48px';
+                    mouseTrail.classList.add('shadow-glow');
+                } else {
+                    mouseTrail.style.width = '32px';
+                    mouseTrail.style.height = '32px';
+                    mouseTrail.classList.remove('shadow-glow');
+                }
+            });
+            
+            // 鼠标离开窗口时隐藏追踪效果
+            document.addEventListener('mouseleave', () => {
+                mouseTrail.style.opacity = '0';
+            });
+        }
+
+        // 处理API请求
+        function handleApiRequest() {
+            const params = new URLSearchParams(window.location.search);
+            const text = params.get('text');
+            const action = params.get('action');
+
+            if (text && action) {
+                try {
+                    let result;
+                    let response = {
+                        success: true,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    if (action === 'encode') {
+                        result = base64Encode(text);
+                        response.action = 'encode';
+                        response.input = text;
+                        response.output = result;
+                    } else if (action === 'decode') {
+                        result = base64Decode(text);
+                        response.action = 'decode';
+                        response.input = text;
+                        response.output = result;
+                    } else {
+                        throw new Error('无效的action参数，必须是encode或decode');
+                    }
+
+                    if (result === null) {
+                        throw new Error('转换失败');
+                    }
+
+                    // 显示API响应
+                    showApiResponse(response);
+                    
+                    // 添加到历史记录
+                    addToHistory({
+                        type: action === 'encode' ? 'file-to-base64' : 'base64-to-file',
+                        filename: 'API请求',
+                        filetype: 'text/plain',
+                        size: text.length,
+                        timestamp: new Date().toISOString()
+                    });
+
+                } catch (error) {
+                    showApiResponse({
+                        success: false,
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            }
+        }
+
+        // 显示API响应
+        function showApiResponse(data) {
+            outputPlaceholder.classList.add('hidden');
+            base64OutputContainer.classList.add('hidden');
+            fileOutputContainer.classList.add('hidden');
+            apiResponseContainer.classList.remove('hidden');
+            
+            apiResponse.textContent = JSON.stringify(data, null, 2);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 模式切换
+            modeFileToBase64Btn.addEventListener('click', () => switchMode('file-to-base64'));
+            modeBase64ToFileBtn.addEventListener('click', () => switchMode('base64-to-file'));
+
+            // 文件拖放
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.classList.add('border-primary');
+                dropArea.classList.add('bg-primary/5');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('border-primary');
+                dropArea.classList.remove('bg-primary/5');
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            // 文件选择
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // 粘贴按钮
+            pasteBtn.addEventListener('click', handlePaste);
+
+            // 截图按钮
+            screenshotBtn.addEventListener('click', handleScreenshot);
+
+            // URL按钮
+            urlBtn.addEventListener('click', () => handleUrlInput(textUrlInput.value.trim()));
+            urlDialogBtn.addEventListener('click', () => handleUrlInput());
+
+            // 处理文本按钮
+            processTextBtn.addEventListener('click', handleTextInput);
+
+            // 清空输入
+            clearInputBtn.addEventListener('click', clearFileInput);
+            clearBase64Btn.addEventListener('click', clearBase64Input);
+
+            // 文件类型选择
+            fileTypeSelect.addEventListener('change', () => {
+                if (fileTypeSelect.value === 'custom') {
+                    customMimeType.classList.remove('hidden');
+                } else {
+                    customMimeType.classList.add('hidden');
+                }
+            });
+
+            // 转换按钮
+            convertBtn.addEventListener('click', handleConversion);
+
+            // 复制Base64
+            copyBase64Btn.addEventListener('click', copyBase64ToClipboard);
+
+            // 下载Base64
+            downloadBase64Btn.addEventListener('click', downloadBase64AsTxt);
+
+            // 下载文件
+            downloadFileBtn.addEventListener('click', downloadConvertedFile);
+
+            // 复制API响应
+            copyApiResponseBtn.addEventListener('click', () => {
+                const text = apiResponse.textContent;
+                if (text) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('success', 'API响应已复制');
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                        showToast('error', '复制失败，请手动复制');
+                    });
+                }
+            });
+
+            // 帮助模态框
+            helpBtn.addEventListener('click', () => helpModal.classList.remove('hidden'));
+            closeHelp.addEventListener('click', () => helpModal.classList.add('hidden'));
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                }
+            });
+
+            // 历史记录
+            clearHistoryBtn.addEventListener('click', clearHistory);
+
+            // 主题切换
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            if (mode === 'file-to-base64') {
+                modeFileToBase64Btn.classList.add('bg-primary', 'text-white');
+                modeFileToBase64Btn.classList.remove('text-gray-700', 'hover:bg-gray-200');
+                modeBase64ToFileBtn.classList.remove('bg-primary', 'text-white');
+                modeBase64ToFileBtn.classList.add('text-gray-700', 'hover:bg-gray-200');
+                
+                fileInputContainer.classList.remove('hidden');
+                base64InputContainer.classList.add('hidden');
+            } else {
+                modeBase64ToFileBtn.classList.add('bg-primary', 'text-white');
+                modeBase64ToFileBtn.classList.remove('text-gray-700', 'hover:bg-gray-200');
+                modeFileToBase64Btn.classList.remove('bg-primary', 'text-white');
+                modeFileToBase64Btn.classList.add('text-gray-700', 'hover:bg-gray-200');
+                
+                base64InputContainer.classList.remove('hidden');
+                fileInputContainer.classList.add('hidden');
+            }
+            
+            // 重置输出
+            resetOutput();
+        }
+
+        // 处理文件拖放
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                handleFiles(files);
+            }
+        }
+
+        // 处理文件选择
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length) {
+                handleFiles(files);
+            }
+        }
+
+        // 处理文本输入
+        function handleTextInput() {
+            const text = textUrlInput.value.trim();
+            if (!text) {
+                showToast('warning', '请输入文本内容');
+                return;
+            }
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const file = new File([blob], 'text-input.txt', { type: 'text/plain' });
+            selectedFiles = [file];
+            renderFileList();
+            showToast('success', '文本已处理');
+        }
+
+        // 处理文件
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            renderFileList();
+        }
+
+        // 渲染文件列表
+        function renderFileList() {
+            fileList.innerHTML = '';
+            
+            if (selectedFiles.length === 0) {
+                return;
+            }
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2';
+                
+                const fileIcon = getFileIcon(file.type);
+                const fileSize = formatFileSize(file.size);
+                
+                fileItem.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="text-primary mr-3 text-xl">${fileIcon}</span>
+                        <div>
+                            <div class="font-medium text-gray-800 truncate max-w-xs">${file.name}</div>
+                            <div class="text-xs text-gray-500">${file.type || '未知类型'} · ${fileSize}</div>
+                        </div>
+                    </div>
+                    <button class="text-gray-400 hover:text-danger transition-all-300 remove-file" data-index="${index}">
+                        <i class="fa fa-times"></i>
+                    </button>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+            
+            // 添加删除文件事件
+            document.querySelectorAll('.remove-file').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    selectedFiles.splice(index, 1);
+                    renderFileList();
+                });
+            });
+        }
+
+        // 获取文件图标
+        function getFileIcon(mimeType) {
+            if (mimeType.startsWith('image/')) {
+                return '<i class="fa fa-file-image-o"></i>';
+            } else if (mimeType.startsWith('text/')) {
+                return '<i class="fa fa-file-text-o"></i>';
+            } else if (mimeType === 'application/pdf') {
+                return '<i class="fa fa-file-pdf-o"></i>';
+            } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+                return '<i class="fa fa-file-excel-o"></i>';
+            } else if (mimeType.includes('word') || mimeType.includes('document')) {
+                return '<i class="fa fa-file-word-o"></i>';
+            } else if (mimeType.includes('zip') || mimeType.includes('compressed')) {
+                return '<i class="fa fa-file-zip-o"></i>';
+            } else {
+                return '<i class="fa fa-file-o"></i>';
+            }
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 处理粘贴
+        async function handlePaste() {
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                
+                for (const item of clipboardItems) {
+                    // 处理图片
+                    if (item.types.some(type => type.startsWith('image/'))) {
+                        const type = item.types.find(type => type.startsWith('image/'));
+                        const blob = await item.getType(type);
+                        const ext = type.split('/')[1];
+                        const file = new File([blob], `pasted-image.${ext}`, { type });
+                        selectedFiles = [file];
+                        renderFileList();
+                        showToast('success', '图片已从剪贴板粘贴');
+                        return;
+                    }
+                }
+                
+                // 处理文本
+                const text = await navigator.clipboard.readText();
+                if (!text) {
+                    showToast('warning', '剪贴板为空');
+                    return;
+                }
+                
+                // 检查是否是URL
+                try {
+                    new URL(text);
+                    textUrlInput.value = text;
+                    showToast('success', 'URL已粘贴到输入框');
+                } catch (e) {
+                    // 作为文本处理
+                    textUrlInput.value = text;
+                    showToast('success', '文本已粘贴到输入框');
+                }
+            } catch (err) {
+                console.error('粘贴失败:', err);
+                showToast('error', '粘贴失败，请手动粘贴');
+            }
+        }
+
+        // 处理截图
+        async function handleScreenshot() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                    showToast('error', '您的浏览器不支持屏幕捕获');
+                    return;
+                }
+                
+                // 提示用户选择捕获区域
+                showToast('info', '请选择要捕获的区域/窗口/屏幕');
+                
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { 
+                        preferCurrentTab: false,
+                        cursor: "always"
+                    },
+                    audio: false
+                });
+                
+                // 创建视频元素播放流
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.style.display = 'none';
+                document.body.appendChild(video);
+                
+                await video.play();
+                
+                // 创建画布绘制视频帧
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // 停止流并清理
+                stream.getTracks().forEach(track => track.stop());
+                document.body.removeChild(video);
+                
+                // 转换为文件
+                canvas.toBlob(blob => {
+                    const file = new File([blob], 'screenshot.png', { type: 'image/png' });
+                    selectedFiles = [file];
+                    renderFileList();
+                    showToast('success', '截图已捕获');
+                }, 'image/png');
+                
+            } catch (err) {
+                console.error('截图失败:', err);
+                showToast('error', '截图失败，请重试');
+            }
+        }
+
+        // 处理URL输入
+        function handleUrlInput(predefinedUrl) {
+            const url = predefinedUrl || prompt('请输入文件URL:');
+            if (!url) return;
+            
+            try {
+                new URL(url); // 验证URL格式
+                
+                showOutputStatus('加载中...', 'info');
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('网络请求失败');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const fileName = url.split('/').pop().split('?')[0] || 'downloaded-file';
+                        const file = new File([blob], fileName, { type: blob.type });
+                        selectedFiles = [file];
+                        renderFileList();
+                        // 将URL填入输入框
+                        textUrlInput.value = url;
+                        showOutputStatus('', '');
+                        showToast('success', '文件已从URL加载');
+                    })
+                    .catch(err => {
+                        console.error('URL加载失败:', err);
+                        showOutputStatus('加载失败', 'error');
+                        showToast('error', 'URL加载失败: ' + err.message);
+                    });
+            } catch (err) {
+                showToast('error', '无效的URL格式');
+            }
+        }
+
+        // 清空文件输入
+        function clearFileInput() {
+            selectedFiles = [];
+            fileList.innerHTML = '';
+            fileInput.value = '';
+            textUrlInput.value = '';
+            showToast('info', '输入已清空');
+        }
+
+        // 清空Base64输入
+        function clearBase64Input() {
+            base64Input.value = '';
+            showToast('info', '输入已清空');
+        }
+
+        // 处理转换
+        function handleConversion() {
+            if (currentMode === 'file-to-base64') {
+                convertFileToBase64();
+            } else {
+                convertBase64ToFile();
+            }
+        }
+
+        // 文件转Base64
+        function convertFileToBase64() {
+            if (selectedFiles.length === 0) {
+                showToast('warning', '请先选择文件');
+                return;
+            }
+            
+            // 只处理第一个文件
+            const file = selectedFiles[0];
+            showOutputStatus('转换中...', 'info');
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const base64String = event.target.result;
+                const base64Length = base64String.length;
+                const originalSize = file.size;
+                
+                // 显示结果
+                outputPlaceholder.classList.add('hidden');
+                base64OutputContainer.classList.remove('hidden');
+                fileOutputContainer.classList.add('hidden');
+                apiResponseContainer.classList.add('hidden');
+                
+                base64Output.value = base64String;
+                base64Stats.textContent = `原始大小: ${formatFileSize(originalSize)} · Base64长度: ${base64Length.toLocaleString()}`;
+                
+                showOutputStatus('', '');
+                showToast('success', '转换成功');
+                
+                // 添加到历史记录
+                addToHistory({
+                    type: 'file-to-base64',
+                    filename: file.name,
+                    filetype: file.type,
+                    size: originalSize,
+                    timestamp: new Date().toISOString()
+                });
+            };
+            
+            reader.onerror = function() {
+                showOutputStatus('转换失败', 'error');
+                showToast('error', '转换失败: ' + reader.error.message);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Base64转文件
+        function convertBase64ToFile() {
+            const base64String = base64Input.value.trim();
+            if (!base64String) {
+                showToast('warning', '请输入Base64编码');
+                return;
+            }
+            
+            showOutputStatus('转换中...', 'info');
+            
+            try {
+                // 提取MIME类型和数据部分
+                let mimeType = '';
+                let base64Data = '';
+                
+                if (base64String.indexOf(';base64,') !== -1) {
+                    const parts = base64String.split(';base64,');
+                    mimeType = parts[0].split(':')[1];
+                    base64Data = parts[1];
+                } else {
+                    // 如果没有MIME类型，使用用户选择的类型
+                    mimeType = fileTypeSelect.value === 'custom' ? customMimeType.value : fileTypeSelect.value;
+                    base64Data = base64String;
+                }
+                
+                // 解码Base64
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: mimeType });
+                convertedFile = blob;
+                
+                // 提取文件扩展名
+                let extension = mimeType.split('/')[1] || 'bin';
+                if (extension === 'jpeg') extension = 'jpg';
+                
+                // 显示结果
+                outputPlaceholder.classList.add('hidden');
+                fileOutputContainer.classList.remove('hidden');
+                base64OutputContainer.classList.add('hidden');
+                apiResponseContainer.classList.add('hidden');
+                
+                outputFilename.textContent = `file.${extension}`;
+                outputFiletype.textContent = mimeType;
+                outputFilesize.textContent = formatFileSize(blob.size);
+                
+                // 显示预览（如果是图片）
+                filePreview.innerHTML = '';
+                if (mimeType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(blob);
+                    img.className = 'max-h-full max-w-full object-contain';
+                    img.alt = '预览图';
+                    filePreview.appendChild(img);
+                } else {
+                    const icon = getFileIcon(mimeType);
+                    filePreview.innerHTML = `<div class="text-6xl">${icon}</div>`;
+                }
+                
+                showOutputStatus('', '');
+                showToast('success', '转换成功');
+                
+                // 添加到历史记录
+                addToHistory({
+                    type: 'base64-to-file',
+                    filetype: mimeType,
+                    size: blob.size,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (err) {
+                console.error('Base64转换失败:', err);
+                showOutputStatus('转换失败', 'error');
+                showToast('error', '转换失败: ' + err.message);
+            }
+        }
+
+        // 复制Base64到剪贴板
+        function copyBase64ToClipboard() {
+            const text = base64Output.value;
+            if (!text) {
+                showToast('warning', '没有可复制的内容');
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('success', 'Base64编码已复制到剪贴板');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                showToast('error', '复制失败，请手动复制');
+            });
+        }
+
+        // 下载Base64为TXT文件
+        function downloadBase64AsTxt() {
+            const text = base64Output.value;
+            if (!text) {
+                showToast('warning', '没有可下载的内容');
+                return;
+            }
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'base64-encoded.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('success', 'TXT文件已下载');
+        }
+
+        // 下载转换后的文件
+        function downloadConvertedFile() {
+            if (!convertedFile) {
+                showToast('warning', '没有可下载的文件');
+                return;
+            }
+            
+            const url = URL.createObjectURL(convertedFile);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // 确定文件名和扩展名
+            let extension = convertedFile.type.split('/')[1] || 'bin';
+            if (extension === 'jpeg') extension = 'jpg';
+            a.download = `converted-file.${extension}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('success', '文件已下载');
+        }
+
+        // 显示输出状态
+        function showOutputStatus(message, type) {
+            if (!message) {
+                outputStatus.classList.add('hidden');
+                outputStatus.className = 'ml-2 text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700 hidden';
+                return;
+            }
+            
+            outputStatus.textContent = message;
+            outputStatus.classList.remove('hidden', 'bg-gray-200', 'text-gray-700', 'bg-primary', 'text-white', 'bg-danger', 'text-white');
+            
+            if (type === 'info') {
+                outputStatus.classList.add('bg-primary', 'text-white');
+            } else if (type === 'error') {
+                outputStatus.classList.add('bg-danger', 'text-white');
+            } else {
+                outputStatus.classList.add('bg-gray-200', 'text-gray-700');
+            }
+        }
+
+        // 显示提示消息
+        function showToast(type, message) {
+            toastMessage.textContent = message;
+            
+            // 设置图标
+            toastIcon.className = '';
+            if (type === 'success') {
+                toastIcon.classList.add('fa', 'fa-check-circle', 'text-success');
+            } else if (type === 'error') {
+                toastIcon.classList.add('fa', 'fa-times-circle', 'text-danger');
+            } else if (type === 'warning') {
+                toastIcon.classList.add('fa', 'fa-exclamation-triangle', 'text-warning');
+            } else {
+                toastIcon.classList.add('fa', 'fa-info-circle', 'text-primary');
+            }
+            
+            // 显示提示
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 重置输出区域
+        function resetOutput() {
+            outputPlaceholder.classList.remove('hidden');
+            base64OutputContainer.classList.add('hidden');
+            fileOutputContainer.classList.add('hidden');
+            apiResponseContainer.classList.add('hidden');
+            showOutputStatus('', '');
+            convertedFile = null;
+        }
+
+        // 添加到历史记录
+        function addToHistory(item) {
+            history.unshift(item);
+            
+            // 限制历史记录数量为10
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            // 保存到本地存储
+            localStorage.setItem('base64ConverterHistory', JSON.stringify(history));
+            
+            // 重新渲染历史记录
+            renderHistory();
+        }
+
+        // 渲染历史记录
+        function renderHistory() {
+            if (history.length === 0) {
+                historyPlaceholder.classList.remove('hidden');
+                historyList.classList.add('hidden');
+                return;
+            }
+            
+            historyPlaceholder.classList.add('hidden');
+            historyList.classList.remove('hidden');
+            historyList.innerHTML = '';
+            
+            history.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all-300';
+                
+                let typeIcon, typeText;
+                if (item.type === 'file-to-base64') {
+                    typeIcon = '<i class="fa fa-file-o text-primary mr-2"></i>';
+                    typeText = `文件转Base64: ${item.filename}`;
+                } else {
+                    typeIcon = '<i class="fa fa-code text-primary mr-2"></i>';
+                    typeText = `Base64转文件: ${item.filetype}`;
+                }
+                
+                const date = new Date(item.timestamp);
+                const formattedDate = date.toLocaleString();
+                
+                historyItem.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            ${typeIcon}
+                            <span class="text-sm">${typeText}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">${formattedDate}</span>
+                    </div>
+                    <div class="mt-1 text-xs text-gray-600">
+                        大小: ${formatFileSize(item.size)}
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // 清空历史记录
+        function clearHistory() {
+            if (confirm('确定要清空所有转换记录吗？')) {
+                history = [];
+                localStorage.removeItem('base64ConverterHistory');
+                renderHistory();
+                showToast('info', '历史记录已清空');
+            }
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            // 保存主题偏好
+            localStorage.setItem('base64ConverterDarkMode', isDarkMode);
+            applyTheme();
+            
+            showToast('info', isDarkMode ? '已切换到深色模式' : '已切换到浅色模式');
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
