@@ -1,1270 +1,1451 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minghua的个人主页 | Minghua's Portfolio</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Minghua的个人主页，展示技能、项目和联系方式，包含待办清单、Markdown编辑器、3D模型展示等增强功能。">
+  <title>Minghua's Portfolio - Enhanced</title>
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    %22name%22:%22Minghua's%20Portfolio%22,
+    %22short_name%22:%22Minghua%22,
+    %22start_url%22:%22.%22,
+    %22display%22:%22standalone%22,
+    %22background_color%22:%22%230d1117%22,
+    %22theme_color%22:%22%232962FF%22,
+    %22icons%22:[{
+      %22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ccircle%20cx='50'%20cy='50'%20r='40'%20fill='%232962FF'/%3E%3Ctext%20x='50'%20y='65'%20font-family='Arial'%20font-size='40'%20text-anchor='middle'%20fill='white'%3EM%3C/text%3E%3C/svg%3E%22,
+      %22sizes%22:%22192x192%22,
+      %22type%22:%22image/svg+xml%22
+    }]
+  }">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%232962FF%22/><text x=%2250%22 y=%2265%22 font-family=%22Arial%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22>M</text></svg>">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    :root {
+      --primary: #2962FF;
+      --secondary: #00E676;
+      --accent: #6a00ff;
+      --dark-bg: #0d1117;
+      --card-bg: #161b22;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --transition-speed: 0.3s;
+    }
 
-    <!-- Tailwind Configuration -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#6366F1', // 靛蓝色
-                        secondary: '#EC4899', // 粉红色
-                        dark: '#1E293B',
-                        light: '#F8FAFC'
-                    },
-                    fontFamily: {
-                        inter: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .text-gradient {
-                background-clip: text;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            .animate-float {
-                animation: float 6s ease-in-out infinite;
-            }
-            .animate-float-delay {
-                animation: float 6s ease-in-out 2s infinite;
-            }
-            .animate-float-long {
-                animation: float 8s ease-in-out infinite;
-            }
-            .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-            }
-            .card-hover {
-                transition: all 0.3s ease;
-            }
-            .card-hover:hover {
-                transform: translateY(-10px);
-            }
-            .cursor-dot {
-                width: 5px;
-                height: 5px;
-                background-color: theme('colors.primary');
-                border-radius: 50%;
-                position: fixed;
-                pointer-events: none;
-                z-index: 9999;
-                transform: translate(-50%, -50%);
-                transition: width 0.2s, height 0.2s;
-            }
-            .cursor-outline {
-                width: 30px;
-                height: 30px;
-                border: 2px solid theme('colors.primary');
-                border-radius: 50%;
-                position: fixed;
-                pointer-events: none;
-                z-index: 9998;
-                transform: translate(-50%, -50%);
-                transition: width 0.2s, height 0.2s, opacity 0.2s;
-            }
-            .tool-link {
-            display: block;
-            padding: 12px 20px;
-            margin: 10px 0;
-            background: #f0f0f0;
-            border-radius: 8px;
-            color: #1a73e8;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
-            }
-            .tool-link:hover {
-              background: #e0e0e0;
-            }
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
-        }
-    </style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--secondary);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+
+    nav ul li {
+      margin-left: 1.5rem;
+    }
+
+    nav ul li a {
+      color: var(--text-primary);
+      transition: color var(--transition-speed);
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+    }
+
+    nav ul li a i {
+      margin-right: 5px;
+    }
+
+    nav ul li a:hover, nav ul li a.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--secondary);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 5rem 1rem;
+      background: radial-gradient(circle, rgba(41,98,255,0.1) 0%, rgba(13,17,23,0) 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      color: var(--text-secondary);
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeInUp 1s ease-out 0.6s both;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      border-radius: 30px;
+      font-weight: bold;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(41, 98, 255, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(41, 98, 255, 0.1);
+    }
+
+    /* Sections */
+    section {
+      padding: 4rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      margin: 0.5rem auto;
+      border-radius: 2px;
+    }
+
+    /* About */
+    .about-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-img {
+      flex: 1;
+      min-width: 300px;
+      height: 400px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: fadeInLeft 1s ease-out;
+    }
+
+    .profile-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .profile-img:hover img {
+        transform: scale(1.05);
+    }
+
+    .about-text {
+      flex: 2;
+      min-width: 300px;
+      animation: fadeInRight 1s ease-out;
+    }
+
+    .about-text p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item .number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .skill-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      border-top: 3px solid var(--primary);
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .skill-card h3 {
+      margin-bottom: 1rem;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+    }
+
+    .skill-card h3 i {
+      margin-right: 10px;
+    }
+
+    .skill-card ul {
+      list-style-type: none;
+    }
+
+    .skill-card ul li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .skill-card ul li::before {
+      content: '▹';
+      color: var(--primary);
+      position: absolute;
+      left: 0;
+    }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform var(--transition-speed);
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .project-img {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .project-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+        /* 图片容错处理 */
+        /* onerror 事件在 HTML 中设置 */
+    }
+
+    .project-card:hover .project-img img {
+        transform: scale(1.05);
+    }
+
+    .project-info {
+      padding: 1.5rem;
+    }
+
+    .project-info h3 {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .project-info h3 i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+
+    .project-info p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      background-color: rgba(41, 98, 255, 0.2);
+      color: var(--primary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    /* Contact */
+    .contact-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .contact-info {
+        flex: 1;
+        min-width: 300px;
+        animation: fadeInLeft 1s ease-out;
+    }
+
+    .contact-info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-info-item i {
+        font-size: 1.5rem;
+        color: var(--primary);
+        margin-right: 1rem;
+        min-width: 30px;
+    }
+
+    .contact-form {
+      flex: 2;
+      min-width: 300px;
+      animation: fadeInRight 1s ease-out;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid #30363d;
+      background-color: var(--card-bg);
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    /* Enhanced Features Section */
+    #features {
+        background-color: #0a0e14;
+    }
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    .feature-card {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform var(--transition-speed);
+        border-left: 3px solid var(--secondary);
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    .feature-card h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+        display: flex;
+        align-items: center;
+    }
+    .feature-card h3 i { margin-right: 10px; }
+
+
+    /* To-Do List */
+    #todo-app {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 1rem;
+    }
+    #todo-list {
+        list-style: none;
+        margin-top: 1rem;
+    }
+    #todo-list li {
+        padding: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #30363d;
+    }
+    #todo-list li:last-child {
+        border-bottom: none;
+    }
+    .todo-item-text {
+        flex-grow: 1;
+        margin: 0 1rem;
+        word-break: break-all;
+    }
+    .todo-item-text.completed {
+        text-decoration: line-through;
+        color: var(--text-secondary);
+    }
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #ff4d4f;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.2rem;
+    }
+    .delete-btn:hover {
+        color: #ff7875;
+    }
+
+    /* Markdown Editor */
+    #markdown-editor-app {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        height: 500px; /* Fixed height for editor */
+    }
+    #editor-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        margin-top: 1rem;
+        border: 1px solid #30363d;
+        border-radius: 5px;
+    }
+    #markdown-input {
+        flex: 1;
+        padding: 1rem;
+        background-color: #0d1117;
+        color: var(--text-primary);
+        border: none;
+        resize: none;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #preview {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        background-color: #0d1117;
+        border-left: 1px solid #30363d;
+    }
+    #preview h1, #preview h2, #preview h3 { color: var(--secondary); }
+    #preview pre {
+        background-color: #000;
+        padding: 1rem;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+    #preview code {
+        background-color: #000;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+    }
+
+    /* 3D Model Viewer */
+    #model-viewer-app {
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 1rem;
+        text-align: center;
+    }
+    #model-container {
+        width: 100%;
+        height: 400px;
+        background-color: #000;
+        border-radius: 5px;
+        margin-top: 1rem;
+        overflow: hidden;
+    }
+    #model-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #0a0e14;
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-secondary);
+      border-top: 1px solid #30363d;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .social-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        transition: all var(--transition-speed);
+    }
+
+    .social-links a:hover {
+        background-color: var(--primary);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    @keyframes fadeInRight {
+       from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      margin: 5% auto;
+      padding: 0;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 1000px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+      animation-name: animatetop;
+      animation-duration: 0.4s;
+      position: relative;
+    }
+
+    @keyframes animatetop {
+      from {top: -300px; opacity: 0}
+      to {top: 0; opacity: 1}
+    }
+
+    .close {
+      color: var(--text-secondary);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      z-index: 1001;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: var(--text-primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .modal-body {
+      padding: 0;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 0 0 10px 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      nav ul {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        background-color: var(--card-bg);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        padding: 1rem 0;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      }
+
+      nav ul.show {
+        display: flex;
+      }
+
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .about-content {
+        flex-direction: column;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      #editor-container {
+          flex-direction: column;
+      }
+      #preview {
+          border-left: none;
+          border-top: 1px solid #30363d;
+      }
+    }
+  </style>
 </head>
-    
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">Minghua</div>
+      <button class="mobile-menu-btn" id="menuToggle">☰</button>
+      <nav>
+        <ul id="navMenu">
+          <li><a href="#about"><i class="fas fa-user"></i> 关于</a></li>
+          <li><a href="#skills"><i class="fas fa-code"></i> 技能</a></li>
+          <li><a href="#projects"><i class="fas fa-project-diagram"></i> 项目</a></li>
+          <li><a href="#features"><i class="fas fa-star"></i> 功能</a></li>
+          <li><a href="#contact"><i class="fas fa-envelope"></i> 联系</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-<body class="font-inter bg-gradient-to-br from-gray-50 to-gray-100 text-dark dark:from-gray-900 dark:to-gray-800 dark:text-light min-h-screen">
-    <!-- 鼠标跟随元素 -->
-    <div class="cursor-dot hidden md:block"></div>
-    <div class="cursor-outline hidden md:block"></div>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div id="particles-js"></div>
+    <div class="container">
+      <h1>你好，我是 Minghua</h1>
+      <p>AI工程师 & 全栈开发者 | 热衷于创造智能、美观且以用户为中心的数字体验。<br>探索下方增强功能，体验现代Web的强大！</p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn">查看我的作品</a>
+        <a href="#features" class="btn btn-outline">体验增强功能</a>
+      </div>
+    </div>
+  </section>
 
-    <!-- 导航栏 -->
-    <nav id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/80 dark:bg-dark/80 backdrop-blur-md shadow-sm">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-gradient bg-gradient-to-r from-primary to-secondary">
-                <span data-i18n="name">Minghua</span>
-            </a>
-            
-            <!-- 桌面导航 -->
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="font-medium hover:text-primary transition-colors">
-                    <span data-i18n="nav.home">首页</span>
-                </a>
-                <a href="#about" class="font-medium hover:text-primary transition-colors">
-                    <span data-i18n="nav.about">关于</span>
-                </a>
-                <a href="#skills" class="font-medium hover:text-primary transition-colors">
-                    <span data-i18n="nav.skills">技能</span>
-                </a>
-                <a href="#projects" class="font-medium hover:text-primary transition-colors">
-                    <span data-i18n="nav.projects">项目</span>
-                </a>
-                <a href="#contact" class="font-medium hover:text-primary transition-colors">
-                    <span data-i18n="nav.contact">联系</span>
-                </a>
-                <!-- 语言切换 -->
-                <button id="lang-toggle" class="font-medium hover:text-primary transition-colors flex items-center">
-                    <span data-i18n="lang">EN</span>
-                    <i class="fa fa-globe ml-1"></i>
-                </button>
-            </div>
-            
-            <!-- 主题切换 -->
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                <i class="fa fa-moon-o dark:hidden text-xl"></i>
-                <i class="fa fa-sun-o hidden dark:block text-xl"></i>
-            </button>
-            
-            <!-- 移动端菜单按钮 -->
-            <button id="mobile-menu-button" class="md:hidden p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                <i class="fa fa-bars text-xl"></i>
-            </button>
+  <!-- About Section -->
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title">关于我</h2>
+      <div class="about-content">
+        <div class="profile-img">
+          <!-- 图片容错处理：使用 onerror 和 data-fallback -->
+          <img src="https://img.alicdn.com/imgextra/i4/2208333679095/O1CN01Hj0d1i1Yyq1Yyq1Yyq_!!2208333679095.jpg" 
+               data-fallback="https://img.alicdn.com/imgextra/i4/2208333679095/O1CN01Hj0d1i1Yyq1Yyq1Yyq_!!2208333679095.jpg" 
+               onerror="this.onerror=null; this.src=this.dataset.fallback || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgMzAwIDQwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzIwMmMyZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4Yjk0OWUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';" 
+               alt="Minghua的头像">
         </div>
-        
-        <!-- 移动端导航 -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-dark shadow-lg">
-            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
-                <a href="#home" class="font-medium hover:text-primary transition-colors py-2">
-                    <span data-i18n="nav.home">首页</span>
-                </a>
-                <a href="#about" class="font-medium hover:text-primary transition-colors py-2">
-                    <span data-i18n="nav.about">关于</span>
-                </a>
-                <a href="#skills" class="font-medium hover:text-primary transition-colors py-2">
-                    <span data-i18n="nav.skills">技能</span>
-                </a>
-                <a href="#projects" class="font-medium hover:text-primary transition-colors py-2">
-                    <span data-i18n="nav.projects">项目</span>
-                </a>
-                <a href="#contact" class="font-medium hover:text-primary transition-colors py-2">
-                    <span data-i18n="nav.contact">联系</span>
-                </a>
-                <!-- 移动端语言切换 -->
-                <button id="mobile-lang-toggle" class="font-medium hover:text-primary transition-colors py-2 text-left">
-                    <span data-i18n="lang">切换语言 (EN)</span>
-                </button>
+        <div class="about-text">
+          <p>我是一名充满激情的开发者，专注于创造数字体验。我是一名软件开发工程师，专注于创建美观、实用且用户友好的应用程序。凭借在Web开发和人工智能方面的经验，我喜欢通过代码将想法变为现实。</p>
+          <p>当我不编码时，你会发现我在探索新技术、为开源项目做贡献，或者在个人项目上工作以扩展我的技能。</p>
+          
+          <div class="stats">
+            <div class="stat-item">
+              <div class="number">50+</div>
+              <div>项目</div>
             </div>
+            <div class="stat-item">
+              <div class="number">5+</div>
+              <div>年经验</div>
+            </div>
+            <div class="stat-item">
+              <div class="number">10+</div>
+              <div>技术</div>
+            </div>
+          </div>
         </div>
-    </nav>
+      </div>
+    </div>
+  </section>
 
-    <!-- 英雄区域 -->
-    <section id="home" class="pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden relative">
-      <h2>🔧 我的工具箱</h2>
-      <a href="base64-converter_v4.html" class="tool-link" target="_blank">
-        🧩 Base64 编码/解码工具 v4
-      </a>
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-12 md:mb-0 z-10">
-                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight mb-6">
-                        <span data-i18n="hero.greeting">你好，我是</span> <span class="text-gradient bg-gradient-to-r from-primary to-secondary">Minghua</span>
-                    </h1>
-                    <h2 class="text-[clamp(1.2rem,3vw,1.8rem)] text-gray-600 dark:text-gray-300 mb-8">
-                        <span data-i18n="hero.title">开发者 & 设计师</span>
-                    </h2>
-                    <p class="text-lg text-gray-700 dark:text-gray-200 mb-8 max-w-lg" data-i18n="hero.description">
-                        热衷于创造美观、实用且以用户为中心的数字体验。
-                    </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="#projects" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-primary/30 hover:shadow-xl">
-                            <span data-i18n="hero.cta1">查看我的作品</span>
-                        </a>
-                        <a href="#contact" class="px-8 py-3 border-2 border-primary text-primary hover:bg-primary/10 rounded-full font-medium transition-all">
-                            <span data-i18n="hero.cta2">联系我</span>
-                        </a>
-                    </div>
-                    
-                    <!-- 社交链接 -->
-                    <div class="mt-12 flex space-x-6">
-                        <a href="https://github.com/minghua-123" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="GitHub">
-                            <i class="fa fa-github"></i>
-                        </a>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="LinkedIn">
-                            <i class="fa fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="Twitter">
-                            <i class="fa fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-2xl transition-colors" aria-label="CodePen">
-                            <i class="fa fa-codepen"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="md:w-1/2 relative">
-                    <!-- 头像 -->
-                    <div class="relative z-10 rounded-full overflow-hidden border-8 border-white dark:border-dark shadow-2xl">
-                        <img src="https://picsum.photos/id/1005/400/400" alt="Minghua的个人照片" class="w-full h-auto max-w-[300px] mx-auto">
-                    </div>
-                    
-                    <!-- 装饰元素 -->
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
-                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
-                    
-                    <!-- 浮动形状 -->
-                    <div class="absolute top-1/4 -left-10 w-16 h-16 bg-primary/30 rounded-lg rotate-12 animate-float"></div>
-                    <div class="absolute bottom-1/3 -right-5 w-12 h-12 bg-secondary/30 rounded-full animate-float-delay"></div>
-                    <div class="absolute top-1/2 right-1/4 w-8 h-8 bg-primary/40 rounded-full animate-float-long"></div>
-                </div>
-            </div>
+  <!-- Skills Section -->
+  <section id="skills" style="background-color: #0a0e14;">
+    <div class="container">
+      <h2 class="section-title">我的技能</h2>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h3><i class="fab fa-html5"></i> 前端</h3>
+          <ul>
+            <li>HTML5 / CSS3 / JavaScript (ES6+)</li>
+            <li>React / Vue.js / Angular</li>
+            <li>Tailwind CSS / Bootstrap</li>
+            <li>UI/UX 设计</li>
+          </ul>
         </div>
-        
-        <!-- 滚动指示器 -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <a href="#about" class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" aria-label="向下滚动">
-                <i class="fa fa-chevron-down text-2xl"></i>
-            </a>
+        <div class="skill-card">
+          <h3><i class="fas fa-server"></i> 后端</h3>
+          <ul>
+            <li>Node.js / Express.js</li>
+            <li>Python / Django / Flask</li>
+            <li>Java / Spring Boot</li>
+            <li>RESTful API & GraphQL</li>
+          </ul>
         </div>
-    </section>
+        <div class="skill-card">
+          <h3><i class="fas fa-database"></i> 数据库</h3>
+          <ul>
+            <li>MySQL / PostgreSQL</li>
+            <li>MongoDB / Redis</li>
+            <li>Elasticsearch</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h3><i class="fas fa-robot"></i> AI & 云</h3>
+          <ul>
+            <li>机器学习 / 深度学习</li>
+            <li>TensorFlow / PyTorch</li>
+            <li>AWS / Azure / GCP</li>
+            <li>Docker / Kubernetes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- 关于部分 -->
-    <section id="about" class="py-20 bg-white dark:bg-dark shadow-sm">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="about.title">关于我</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+  <!-- Projects Section -->
+  <section id="projects">
+    <div class="container">
+      <h2 class="section-title">我的项目</h2>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-img">
+            <!-- 图片容错处理：多级备用源 -->
+            <img src="https://invalid-url-for-demo.com/nonexistent1.jpg" 
+                 data-backup="https://img.alicdn.com/imgextra/i3/2208333679095/O1CN01GzXH5w1Yyq1GzXH5w_!!2208333679095.jpg,https://picsum.photos/300/200?random=1" 
+                 onerror="loadBackupImage(this)" 
+                 alt="电子商务平台">
+          </div>
+          <div class="project-info">
+            <h3><i class="fas fa-shopping-cart"></i> 电子商务平台</h3>
+            <p>一个功能齐全的电子商务网站，带有支付集成和库存管理。</p>
+            <div class="project-tags">
+              <span class="tag">React</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">MongoDB</span>
             </div>
-            
-            <div class="flex flex-col md:flex-row gap-12 items-center">
-                <div class="md:w-2/5 relative">
-                    <div class="relative z-10 rounded-2xl overflow-hidden shadow-xl">
-                        <img src="https://picsum.photos/id/1076/600/800" alt="Minghua在项目中工作" class="w-full h-auto">
-                    </div>
-                    <div class="absolute -bottom-6 -right-6 w-40 h-40 bg-primary/10 rounded-full -z-10"></div>
-                    <div class="absolute -top-6 -left-6 w-40 h-40 bg-secondary/10 rounded-full -z-10"></div>
-                </div>
-                
-                <div class="md:w-3/5">
-                    <h3 class="text-2xl font-semibold mb-6" data-i18n="about.subtitle">我是一名充满激情的开发者，专注于创造数字体验</h3>
-                    <p class="text-gray-700 dark:text-gray-300 mb-6 text-lg" data-i18n="about.paragraph1">
-                        我是一名软件开发工程师，专注于创建美观、实用且用户友好的应用程序。凭借在Web开发方面的经验，我喜欢通过代码将想法变为现实。
-                    </p>
-                    <p class="text-gray-700 dark:text-gray-300 mb-8 text-lg" data-i18n="about.paragraph2">
-                        当我不编码时，你会发现我在探索新技术、为开源项目做贡献，或者在个人项目上工作以扩展我的技能。
-                    </p>
-                    
-                    <!-- 有趣的事实 -->
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
-                            <p class="text-4xl font-bold text-primary mb-2">50+</p>
-                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.projects">项目</p>
-                        </div>
-                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
-                            <p class="text-4xl font-bold text-primary mb-2">5+</p>
-                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.years">年经验</p>
-                        </div>
-                        <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl text-center">
-                            <p class="text-4xl font-bold text-primary mb-2">10+</p>
-                            <p class="text-gray-600 dark:text-gray-400" data-i18n="about.stats.technologies">技术</p>
-                        </div>
-                    </div>
-                    
-                    <a href="#" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-full font-medium transition-all shadow-lg hover:shadow-primary/30">
-                        <span data-i18n="about.resume">下载简历</span>
-                        <i class="fa fa-download ml-2"></i>
-                    </a>
-                </div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-img">
+            <!-- 图片容错处理：单级备用源 -->
+            <img src="https://invalid-url-for-demo.com/nonexistent2.jpg" 
+                 data-fallback="https://img.alicdn.com/imgextra/i1/2208333679095/O1CN01FJ0Q0w1Yyq1FJ0Q0w_!!2208333679095.jpg" 
+                 onerror="this.onerror=null; this.src=this.dataset.fallback || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMzAwIDIwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzIwMmMyZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4Yjk0OWUiPlByb2plY3QgSW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';" 
+                 alt="健身追踪应用">
+          </div>
+          <div class="project-info">
+            <h3><i class="fas fa-dumbbell"></i> 健身追踪应用</h3>
+            <p>一个用于跟踪锻炼和健身进度的移动应用，支持社交分享。</p>
+            <div class="project-tags">
+              <span class="tag">React Native</span>
+              <span class="tag">Firebase</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-img">
+            <!-- 图片容错处理：无备用源，仅使用默认 -->
+            <img src="https://invalid-url-for-demo.com/nonexistent3.jpg" 
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMzAwIDIwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzIwMmMyZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4Yjk0OWUiPlByb2plY3QgSW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';" 
+                 alt="AI助手">
+          </div>
+          <div class="project-info">
+            <h3><i class="fas fa-brain"></i> AI智能助手</h3>
+            <p>基于大语言模型的智能问答系统，可集成到多种应用中。</p>
+            <div class="project-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Transformers</span>
+              <span class="tag">FastAPI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+   <!-- Enhanced Features Section -->
+   <section id="features">
+    <div class="container">
+      <h2 class="section-title">增强功能演示</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3><i class="fas fa-tasks"></i> 本地待办清单</h3>
+          <p>使用 localStorage 持久化存储的交互式待办事项列表。</p>
+           <div id="todo-app">
+                <input type="text" id="new-todo" placeholder="添加新任务..." style="width: calc(100% - 60px); padding: 0.5rem; border-radius: 5px; border: 1px solid #30363d; background-color: var(--card-bg); color: var(--text-primary);">
+                <button id="add-todo" class="btn" style="width: 50px; padding: 0.5rem;">添加</button>
+                <ul id="todo-list"></ul>
             </div>
         </div>
-    </section>
-
-    <!-- 技能部分 -->
-    <section id="skills" class="py-20 bg-gray-50 dark:bg-gray-900">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="skills.title">我的技能</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
-                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="skills.description">
-                    在我的职业生涯中，我使用过各种技术。以下是我的一些关键技能和专业知识。
-                </p>
-            </div>
-            
-            <!-- 技能标签页 -->
-            <div class="flex flex-wrap justify-center mb-12 gap-4">
-                <button class="skill-tab active px-6 py-2 rounded-full bg-primary text-white font-medium" data-tab="frontend">
-                    <span data-i18n="skills.tabs.frontend">前端</span>
-                </button>
-                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="backend">
-                    <span data-i18n="skills.tabs.backend">后端</span>
-                </button>
-                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="database">
-                    <span data-i18n="skills.tabs.database">数据库</span>
-                </button>
-                <button class="skill-tab px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-tab="tools">
-                    <span data-i18n="skills.tabs.tools">工具</span>
-                </button>
-            </div>
-            
-            <!-- 技能内容 -->
-            <div class="skill-content active" id="frontend">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- 技能卡片 -->
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-html5 text-2xl text-orange-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">HTML5</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.html5">
-                            熟练创建语义化、可访问且结构良好的HTML文档。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 95%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-css3 text-2xl text-blue-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">CSS3</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.css3">
-                            精通现代CSS技术，包括Flexbox、Grid、动画和响应式设计。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 90%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-js-square text-2xl text-yellow-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">JavaScript</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.javascript">
-                            精通原生JavaScript、ES6+、DOM操作和异步编程。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-react text-2xl text-blue-400"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">React</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.react">
-                            使用React及其生态系统构建现代、响应式和交互式用户界面。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-bootstrap text-2xl text-purple-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">Bootstrap</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.bootstrap">
-                            使用Bootstrap框架及其组件快速创建响应式设计。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-paint-brush text-2xl text-pink-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">UI/UX设计</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.frontend.uiux">
-                            设计用户友好的界面，注重用户体验和可访问性。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skill-content hidden" id="backend">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- 后端技能 -->
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-nodejs text-2xl text-green-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">Node.js</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.nodejs">
-                            使用Node.js及其生态系统构建可扩展的服务器端应用程序。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-server text-2xl text-gray-700 dark:text-gray-300"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">Express.js</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.express">
-                            使用Express.js框架创建健壮的API和Web应用程序。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-python text-2xl text-blue-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">Python</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.backend.python">
-                            使用Python编程语言开发后端服务和脚本。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 70%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skill-content hidden" id="database">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- 数据库技能 -->
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-database text-2xl text-orange-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">MySQL</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.database.mysql">
-                            使用MySQL设计和管理关系型数据库。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-leaf text-2xl text-green-500"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">MongoDB</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.database.mongodb">
-                            使用MongoDB处理面向文档的数据库。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skill-content hidden" id="tools">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- 工具技能 -->
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-github text-2xl text-gray-800 dark:text-gray-200"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">Git & GitHub</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.git">
-                            精通版本控制、分支策略和协作工作流。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 90%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-terminal text-2xl text-gray-700 dark:text-gray-300"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">命令行</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.terminal">
-                            熟练使用命令行界面执行开发任务。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg card-hover">
-                        <div class="w-14 h-14 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mb-6">
-                            <i class="fa fa-cloud text-2xl text-blue-400"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-3">部署</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-i18n="skills.tools.deployment">
-                            将应用程序部署到各种平台，包括AWS、Heroku和Netlify。
-                        </p>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-2.5 rounded-full" style="width: 75%"></div>
-                        </div>
-                    </div>
+        <div class="feature-card">
+          <h3><i class="fas fa-file-code"></i> Markdown 编辑器</h3>
+          <p>实时预览的 Markdown 编辑器，支持代码高亮。</p>
+           <div id="markdown-editor-app">
+                <div id="editor-container">
+                    <textarea id="markdown-input" placeholder="在此输入 Markdown..."></textarea>
+                    <div id="preview"></div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- 项目部分 -->
-    <section id="projects" class="py-20 bg-white dark:bg-dark">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="projects.title">我的项目</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
-                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="projects.description">
-                    查看我的一些近期作品。这些项目展示了我在Web开发方面的技能和专业知识。
-                </p>
-            </div>
-            
-            <!-- 项目筛选 -->
-            <div class="flex flex-wrap justify-center mb-12 gap-4">
-                <button class="project-filter active px-6 py-2 rounded-full bg-primary text-white font-medium" data-filter="all">
-                    <span data-i18n="projects.filters.all">所有项目</span>
-                </button>
-                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="web">
-                    <span data-i18n="projects.filters.web">Web应用</span>
-                </button>
-                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="mobile">
-                    <span data-i18n="projects.filters.mobile">移动应用</span>
-                </button>
-                <button class="project-filter px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-medium transition-colors" data-filter="design">
-                    <span data-i18n="projects.filters.design">设计</span>
-                </button>
-            </div>
-            
-            <!-- 项目网格 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- 项目1 -->
-                <div class="project-card group" data-category="web">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/180/600/400" alt="电子商务网站项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.ecommerce.name">电子商务平台</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.ecommerce.desc">
-                        一个功能齐全的电子商务网站，带有支付集成。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">React</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Node.js</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">MongoDB</span>
-                    </div>
-                </div>
-                
-                <!-- 项目2 -->
-                <div class="project-card group" data-category="mobile">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/160/600/400" alt="健身追踪应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.fitness.name">健身追踪应用</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.fitness.desc">
-                        一个用于跟踪锻炼和健身进度的移动应用。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">React Native</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Firebase</span>
-                    </div>
-                </div>
-                
-                <!-- 项目3 -->
-                <div class="project-card group" data-category="design">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/20/600/400" alt="UI设计项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.dashboard.name">仪表盘UI设计</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.dashboard.desc">
-                        具有数据可视化的现代仪表盘界面。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Figma</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Tailwind CSS</span>
-                    </div>
-                </div>
-                
-                <!-- 项目4 -->
-                <div class="project-card group" data-category="web">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/119/600/400" alt="博客平台项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.blog.name">博客平台</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.blog.desc">
-                        用于创建和管理博客文章的内容管理系统。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Django</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">PostgreSQL</span>
-                    </div>
-                </div>
-                
-                <!-- 项目5 -->
-                <div class="project-card group" data-category="mobile">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/169/600/400" alt="天气应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.weather.name">天气预报应用</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.weather.desc">
-                        提供实时天气信息的移动应用。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Flutter</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">API集成</span>
-                    </div>
-                </div>
-                
-                <!-- 项目6 -->
-                <div class="project-card group" data-category="web">
-                    <div class="relative overflow-hidden rounded-2xl shadow-lg mb-4">
-                        <img src="https://picsum.photos/id/26/600/400" alt="任务管理应用项目" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                            <div class="p-6">
-                                <div class="flex space-x-4">
-                                    <a href="#" target="_blank" class="text-white bg-primary/80 hover:bg-primary p-3 rounded-full transition-colors" aria-label="查看项目">
-                                        <i class="fa fa-link"></i>
-                                    </a>
-                                    <a href="https://github.com/minghua-123" target="_blank" class="text-white bg-dark/80 hover:bg-dark p-3 rounded-full transition-colors border border-white/20" aria-label="GitHub仓库">
-                                        <i class="fa fa-github"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2" data-i18n="projects.items.taskmanager.name">任务管理器</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3" data-i18n="projects.items.taskmanager.desc">
-                        用于管理任务和项目的生产力应用。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Vue.js</span>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm">Firebase</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-12">
-                <a href="https://github.com/minghua-123" target="_blank" class="inline-flex items-center px-8 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-dark dark:text-light rounded-full font-medium transition-all">
-                    <span data-i18n="projects.viewall">在GitHub上查看所有项目</span>
-                    <i class="fa fa-github ml-2"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 联系部分 -->
-    <section id="contact" class="py-20 bg-gray-50 dark:bg-gray-900">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4" data-i18n="contact.title">联系我</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
-                <p class="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" data-i18n="contact.description">
-                    有兴趣一起合作吗？在下面的表格中填写有关您项目的一些信息，我会尽快回复您。
-                </p>
-            </div>
-            
-            <div class="flex flex-col lg:flex-row gap-12">
-                <div class="lg:w-1/2">
-                    <form class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
-                        <div class="mb-6">
-                            <label for="name" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.name">您的姓名</label>
-                            <input type="text" id="name" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="张三">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label for="email" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.email">邮箱地址</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="example@mail.com">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label for="subject" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.subject">主题</label>
-                            <input type="text" id="subject" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors" placeholder="项目咨询">
-                        </div>
-                        
-                        <div class="mb-6">
-                            <label for="message" class="block text-gray-700 dark:text-gray-300 mb-2 font-medium" data-i18n="contact.form.message">您的消息</label>
-                            <textarea id="message" rows="5" class="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:ring-2 focus:ring-primary outline-none transition-colors resize-none" placeholder="告诉我关于您的项目..."></textarea>
-                        </div>
-                        
-                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg font-medium transition-all shadow-lg hover:shadow-primary/30">
-                            <span data-i18n="contact.form.submit">发送消息</span>
-                        </button>
-                    </form>
-                </div>
-                
-                <div class="lg:w-1/2">
-                    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg h-full">
-                        <h3 class="text-2xl font-semibold mb-8" data-i18n="contact.info.title">联系信息</h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex items-start">
-                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i class="fa fa-envelope text-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.email">邮箱</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">
-                                        <a href="mailto:minghua@example.com" class="hover:text-primary transition-colors">minghua@example.com</a>
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i class="fa fa-map-marker text-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.location">地址</h4>
-                                    <p class="text-gray-600 dark:text-gray-400" data-i18n="contact.info.locationDetail">
-                                        中国北京市
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                    <i class="fa fa-clock-o text-primary text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-lg font-medium mb-1" data-i18n="contact.info.hours">工作时间</h4>
-                                    <p class="text-gray-600 dark:text-gray-400" data-i18n="contact.info.hoursDetail">
-                                        周一至周五: 9:00 - 18:00
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-12">
-                            <h3 class="text-xl font-semibold mb-6" data-i18n="contact.follow">关注我</h3>
-                            <div class="flex space-x-4">
-                                <a href="https://github.com/minghua-123" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="GitHub">
-                                    <i class="fa fa-github text-xl"></i>
-                                </a>
-                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="LinkedIn">
-                                    <i class="fa fa-linkedin text-xl"></i>
-                                </a>
-                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="Twitter">
-                                    <i class="fa fa-twitter text-xl"></i>
-                                </a>
-                                <a href="#" target="_blank" class="w-12 h-12 bg-gray-100 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary rounded-full flex items-center justify-center transition-colors" aria-label="Instagram">
-                                    <i class="fa fa-instagram text-xl"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+        <div class="feature-card">
+          <h3><i class="fas fa-cube"></i> 3D 模型展示</h3>
+          <p>使用 Three.js 加载和交互 3D 模型 (示例占位)。</p>
+           <div id="model-viewer-app">
+                <p>此区域将展示一个可交互的3D模型。</p>
+                <div id="model-container">
+                    <div id="model-placeholder">3D模型加载区域</div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- 页脚 -->
-    <footer class="bg-dark dark:bg-gray-950 text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-                <a href="#" class="text-2xl font-bold text-gradient bg-gradient-to-r from-primary to-secondary mb-6 md:mb-0">
-                    <span data-i18n="name">Minghua</span>
-                </a>
-                
-                <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
-                    <a href="#home" class="hover:text-primary transition-colors">
-                        <span data-i18n="nav.home">首页</span>
-                    </a>
-                    <a href="#about" class="hover:text-primary transition-colors">
-                        <span data-i18n="nav.about">关于</span>
-                    </a>
-                    <a href="#skills" class="hover:text-primary transition-colors">
-                        <span data-i18n="nav.skills">技能</span>
-                    </a>
-                    <a href="#projects" class="hover:text-primary transition-colors">
-                        <span data-i18n="nav.projects">项目</span>
-                    </a>
-                    <a href="#contact" class="hover:text-primary transition-colors">
-                        <span data-i18n="nav.contact">联系</span>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 mb-4 md:mb-0" data-i18n="footer.copyright">
-                    &copy; 2025 Minghua. 保留所有权利。
-                </p>
-                
-                <p class="text-gray-400" data-i18n="footer.design">
-                    用 <i class="fa fa-heart text-secondary"></i> 设计和开发
-                </p>
-            </div>
+        <div class="feature-card">
+          <h3><i class="fas fa-tools"></i> Base64 编码/解码工具</h3>
+          <p>在线进行 Base64 编码和解码操作。</p>
+          <a href="base64-converter_v4.html" class="btn" style="margin-top: 1rem;" onclick="openToolInModal('base64-converter_v4.html'); return false;">
+            🧩 打开放大版 Base64 工具 v4
+          </a>
         </div>
-    </footer>
+      </div>
+    </div>
+  </section>
 
-    <!-- 返回顶部按钮 -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary hover:bg-primary/90 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transform transition-all duration-300 opacity-0 translate-y-10" aria-label="返回顶部">
-        <i class="fa fa-chevron-up"></i>
-    </button>
+  <!-- Contact Section -->
+  <section id="contact" style="background-color: #0a0e14;">
+    <div class="container">
+      <h2 class="section-title">联系我</h2>
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h3>邮箱</h3>
+              <p>minghua@example.com</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h3>地址</h3>
+              <p>中国北京市</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <h3>工作时间</h3>
+              <p>周一至周五: 9:00 - 18:00</p>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="name">姓名</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">邮箱</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="subject">主题</label>
+              <input type="text" id="subject" name="subject" required />
+            </div>
+            <div class="form-group">
+              <label for="message">消息</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="btn">发送消息</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- JavaScript -->
-    <script>
-        // 国际化文本数据
-        const translations = {
-            en: {
-                "name": "Minghua",
-                "nav.home": "Home",
-                "nav.about": "About",
-                "nav.skills": "Skills",
-                "nav.projects": "Projects",
-                "nav.contact": "Contact",
-                "lang": "中文",
-                "hero.greeting": "Hi, I'm",
-                "hero.title": "Developer & Designer",
-                "hero.description": "Passionate about creating beautiful, functional, and user-centered digital experiences.",
-                "hero.cta1": "View My Work",
-                "hero.cta2": "Get In Touch",
-                "about.title": "About Me",
-                "about.subtitle": "I'm a passionate developer creating digital experiences",
-                "about.paragraph1": "I'm a software developer with a focus on creating beautiful, functional, and user-friendly applications. With experience in web development, I love turning ideas into reality through code.",
-                "about.paragraph2": "When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or working on personal projects to expand my skills.",
-                "about.stats.projects": "Projects",
-                "about.stats.years": "Years",
-                "about.stats.technologies": "Technologies",
-                "about.resume": "Download Resume",
-                "skills.title": "My Skills",
-                "skills.description": "I've worked with a variety of technologies throughout my career. Here are some of my key skills and expertise.",
-                "skills.tabs.frontend": "Frontend",
-                "skills.tabs.backend": "Backend",
-                "skills.tabs.database": "Database",
-                "skills.tabs.tools": "Tools",
-                "skills.frontend.html5": "Proficient in creating semantic, accessible, and well-structured HTML documents.",
-                "skills.frontend.css3": "Skilled in modern CSS techniques, including Flexbox, Grid, animations, and responsive design.",
-                "skills.frontend.javascript": "Experienced in vanilla JavaScript, ES6+, DOM manipulation, and asynchronous programming.",
-                "skills.frontend.react": "Building modern, responsive, and interactive user interfaces with React and its ecosystem.",
-                "skills.frontend.bootstrap": "Creating responsive designs quickly using Bootstrap framework and its components.",
-                "skills.frontend.uiux": "Designing user-friendly interfaces with a focus on user experience and accessibility.",
-                "skills.backend.nodejs": "Building scalable server-side applications with Node.js and its ecosystem.",
-                "skills.backend.express": "Creating robust APIs and web applications with Express.js framework.",
-                "skills.backend.python": "Developing backend services and scripts with Python programming language.",
-                "skills.database.mysql": "Designing and managing relational databases with MySQL.",
-                "skills.database.mongodb": "Working with document-oriented databases using MongoDB.",
-                "skills.tools.git": "Proficient in version control, branching strategies, and collaborative workflows.",
-                "skills.tools.terminal": "Comfortable working with command line interfaces for development tasks.",
-                "skills.tools.deployment": "Deploying applications to various platforms including AWS, Heroku, and Netlify.",
-                "projects.title": "My Projects",
-                "projects.description": "Check out some of my recent work. These projects showcase my skills and expertise in web development.",
-                "projects.filters.all": "All Projects",
-                "projects.filters.web": "Web Apps",
-                "projects.filters.mobile": "Mobile Apps",
-                "projects.filters.design": "Design",
-                "projects.items.ecommerce.name": "E-commerce Platform",
-                "projects.items.ecommerce.desc": "A fully functional e-commerce website with payment integration.",
-                "projects.items.fitness.name": "Fitness Tracker App",
-                "projects.items.fitness.desc": "A mobile app for tracking workouts and fitness progress.",
-                "projects.items.dashboard.name": "Dashboard UI Design",
-                "projects.items.dashboard.desc": "A modern dashboard interface with data visualization.",
-                "projects.items.blog.name": "Blog Platform",
-                "projects.items.blog.desc": "A content management system for creating and managing blog posts.",
-                "projects.items.weather.name": "Weather Forecast App",
-                "projects.items.weather.desc": "A mobile app that provides real-time weather information.",
-                "projects.items.taskmanager.name": "Task Manager",
-                "projects.items.taskmanager.desc": "A productivity app for managing tasks and projects.",
-                "projects.viewall": "View All Projects on GitHub",
-                "contact.title": "Get In Touch",
-                "contact.description": "Interested in working together? Fill out the form below with some info about your project, and I'll get back to you as soon as I can.",
-                "contact.form.name": "Your Name",
-                "contact.form.email": "Email Address",
-                "contact.form.subject": "Subject",
-                "contact.form.message": "Your Message",
-                "contact.form.submit": "Send Message",
-                "contact.info.title": "Contact Information",
-                "contact.info.email": "Email",
-                "contact.info.location": "Location",
-                "contact.info.locationDetail": "Beijing, China",
-                "contact.info.hours": "Working Hours",
-                "contact.info.hoursDetail": "Monday - Friday: 9AM - 6PM",
-                "contact.follow": "Follow Me",
-                "footer.copyright": "&copy; 2025 Minghua. All rights reserved.",
-                "footer.design": "Designed & Built with <i class='fa fa-heart text-secondary'></i>"
-            },
-            zh: {
-                "name": "Minghua",
-                "nav.home": "首页",
-                "nav.about": "关于",
-                "nav.skills": "技能",
-                "nav.projects": "项目",
-                "nav.contact": "联系",
-                "lang": "EN",
-                "hero.greeting": "你好，我是",
-                "hero.title": "开发者 & 设计师",
-                "hero.description": "热衷于创造美观、实用且以用户为中心的数字体验。",
-                "hero.cta1": "查看我的作品",
-                "hero.cta2": "联系我",
-                "about.title": "关于我",
-                "about.subtitle": "我是一名充满激情的开发者，专注于创造数字体验",
-                "about.paragraph1": "我是一名软件开发工程师，专注于创建美观、实用且用户友好的应用程序。凭借在Web开发方面的经验，我喜欢通过代码将想法变为现实。",
-                "about.paragraph2": "当我不编码时，你会发现我在探索新技术、为开源项目做贡献，或者在个人项目上工作以扩展我的技能。",
-                "about.stats.projects": "项目",
-                "about.stats.years": "年经验",
-                "about.stats.technologies": "技术",
-                "about.resume": "下载简历",
-                "skills.title": "我的技能",
-                "skills.description": "在我的职业生涯中，我使用过各种技术。以下是我的一些关键技能和专业知识。",
-                "skills.tabs.frontend": "前端",
-                "skills.tabs.backend": "后端",
-                "skills.tabs.database": "数据库",
-                "skills.tabs.tools": "工具",
-                "skills.frontend.html5": "熟练创建语义化、可访问且结构良好的HTML文档。",
-                "skills.frontend.css3": "精通现代CSS技术，包括Flexbox、Grid、动画和响应式设计。",
-                "skills.frontend.javascript": "精通原生JavaScript、ES6+、DOM操作和异步编程。",
-                "skills.frontend.react": "使用React及其生态系统构建现代、响应式和交互式用户界面。",
-                "skills.frontend.bootstrap": "使用Bootstrap框架及其组件快速创建响应式设计。",
-                "skills.frontend.uiux": "设计用户友好的界面，注重用户体验和可访问性。",
-                "skills.backend.nodejs": "使用Node.js及其生态系统构建可扩展的服务器端应用程序。",
-                "skills.backend.express": "使用Express.js框架创建健壮的API和Web应用程序。",
-                "skills.backend.python": "使用Python编程语言开发后端服务和脚本。",
-                "skills.database.mysql": "使用MySQL设计和管理关系型数据库。",
-                "skills.database.mongodb": "使用MongoDB处理面向文档的数据库。",
-                "skills.tools.git": "精通版本控制、分支策略和协作工作流。",
-                "skills.tools.terminal": "熟练使用命令行界面执行开发任务。",
-                "skills.tools.deployment": "将应用程序部署到各种平台，包括AWS、Heroku和Netlify。",
-                "projects.title": "我的项目",
-                "projects.description": "查看我的一些近期作品。这些项目展示了我在Web开发方面的技能和专业知识。",
-                "projects.filters.all": "所有项目",
-                "projects.filters.web": "Web应用",
-                "projects.filters.mobile": "移动应用",
-                "projects.filters.design": "设计",
-                "projects.items.ecommerce.name": "电子商务平台",
-                "projects.items.ecommerce.desc": "一个功能齐全的电子商务网站，带有支付集成。",
-                "projects.items.fitness.name": "健身追踪应用",
-                "projects.items.fitness.desc": "一个用于跟踪锻炼和健身进度的移动应用。",
-                "projects.items.dashboard.name": "仪表盘UI设计",
-                "projects.items.dashboard.desc": "具有数据可视化的现代仪表盘界面。",
-                "projects.items.blog.name": "博客平台",
-                "projects.items.blog.desc": "用于创建和管理博客文章的内容管理系统。",
-                "projects.items.weather.name": "天气预报应用",
-                "projects.items.weather.desc": "提供实时天气信息的移动应用。",
-                "projects.items.taskmanager.name": "任务管理器",
-                "projects.items.taskmanager.desc": "用于管理任务和项目的生产力应用。",
-                "projects.viewall": "在GitHub上查看所有项目",
-                "contact.title": "联系我",
-                "contact.description": "有兴趣一起合作吗？在下面的表格中填写有关您项目的一些信息，我会尽快回复您。",
-                "contact.form.name": "您的姓名",
-                "contact.form.email": "邮箱地址",
-                "contact.form.subject": "主题",
-                "contact.form.message": "您的消息",
-                "contact.form.submit": "发送消息",
-                "contact.info.title": "联系信息",
-                "contact.info.email": "邮箱",
-                "contact.info.location": "地址",
-                "contact.info.locationDetail": "中国北京市",
-                "contact.info.hours": "工作时间",
-                "contact.info.hoursDetail": "周一至周五: 9:00 - 18:00",
-                "contact.follow": "关注我",
-                "footer.copyright": "&copy; 2025 Minghua. 保留所有权利。",
-                "footer.design": "用 <i class='fa fa-heart text-secondary'></i> 设计和开发"
-            }
-        };
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="social-links">
+        <a href="#"><i class="fab fa-github"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-weixin"></i></a>
+      </div>
+      <p>&copy; 2025 Minghua. 保留所有权利。</p>
+      <p><small>此页面为PWA，支持离线访问和安装。</small></p>
+    </div>
+  </footer>
 
-        // 当前语言
-        let currentLang = 'zh';
-        
-        // 切换语言函数
-        function toggleLanguage() {
-            currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            
-            // 更新所有翻译文本
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[currentLang][key]) {
-                    element.innerHTML = translations[currentLang][key];
-                }
+  <!-- Modal Structure -->
+  <div id="toolModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div class="modal-header">
+        <h2>Base64 编码/解码工具</h2>
+      </div>
+      <div class="modal-body">
+        <iframe src="" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Particles.js for background effect -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Prism.js for code highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <!-- Three.js for 3D model viewer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <script>
+    // --- PWA Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
+                const CACHE_NAME = 'minghua-portfolio-v1';
+                const urlsToCache = [
+                    '.',
+                    './index.html', // Assuming this file is named index.html
+                    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css',
+                    'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js',
+                    'https://cdn.jsdelivr.net/npm/marked/marked.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+                ];
+
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                // Return cached version or fetch from network
+                                return response || fetch(event.request);
+                            }
+                        )
+                    );
+                });
+            `)).then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(error => {
+                console.log('Service Worker registration failed:', error);
             });
-            
-            // 更新页面语言属性
-            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+        });
+    }
+
+    // --- Particles.js ---
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#2962FF" },
+        shape: { type: "circle" },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#2962FF",
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out",
+          bounce: false
         }
-        
-        // 语言切换按钮事件
-        document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
-        document.getElementById('mobile-lang-toggle').addEventListener('click', toggleLanguage);
-
-        // 鼠标跟随效果
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-        
-        window.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-            
-            // 小点跟随鼠标
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-            
-            // 延迟更新大圈位置，创造跟随效果
-            setTimeout(() => {
-                cursorOutline.style.left = `${posX}px`;
-                cursorOutline.style.top = `${posY}px`;
-            }, 100);
-        });
-        
-        // 鼠标悬停在链接上时改变光标大小
-        const interactiveElements = document.querySelectorAll('a, button, .project-card, .skill-tab, .project-filter');
-        
-        interactiveElements.forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursorDot.style.width = '8px';
-                cursorDot.style.height = '8px';
-                cursorOutline.style.width = '50px';
-                cursorOutline.style.height = '50px';
-                cursorOutline.style.opacity = '0.5';
-            });
-            
-            element.addEventListener('mouseleave', () => {
-                cursorDot.style.width = '5px';
-                cursorDot.style.height = '5px';
-                cursorOutline.style.width = '30px';
-                cursorOutline.style.height = '30px';
-                cursorOutline.style.opacity = '1';
-            });
-        });
-
-        // 移动端菜单切换
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // 点击链接时关闭移动端菜单
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-        
-        // 主题切换 - 修复版本
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-        
-        // 检查保存的主题偏好或使用系统偏好
-        function applySavedTheme() {
-            if (localStorage.getItem('theme') === 'dark' || 
-                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                htmlElement.classList.add('dark');
-            } else {
-                htmlElement.classList.remove('dark');
-            }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "grab" },
+          onclick: { enable: true, mode: "push" },
+          resize: true
         }
-        
-        // 初始应用主题
-        applySavedTheme();
-        
-        themeToggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            
-            // 保存主题偏好
-            if (htmlElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-        
-        // 技能标签页
-        const skillTabs = document.querySelectorAll('.skill-tab');
-        const skillContents = document.querySelectorAll('.skill-content');
-        
-        skillTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 移除所有标签和内容的活动类
-                skillTabs.forEach(t => {
-                    t.classList.remove('active', 'bg-primary', 'text-white');
-                    t.classList.add('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
-                });
-                
-                skillContents.forEach(content => {
-                    content.classList.add('hidden');
-                    content.classList.remove('active');
-                });
-                
-                // 为点击的标签和相应内容添加活动类
-                tab.classList.add('active', 'bg-primary', 'text-white');
-                tab.classList.remove('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
-                
-                const tabId = tab.getAttribute('data-tab');
-                const activeContent = document.getElementById(tabId);
-                activeContent.classList.remove('hidden');
-                activeContent.classList.add('active');
+      },
+      retina_detect: true
+    });
+
+    // --- Navigation & Scroll Animations ---
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+    const navLinks = navMenu.querySelectorAll('a');
+
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('show');
+    });
+
+    function changeActiveLink() {
+        let index = navLinks.length;
+        while(--index && window.scrollY + 50 < document.getElementById(navLinks[index].getAttribute('href').substring(1)).offsetTop) {}
+        navLinks.forEach(link => link.classList.remove('active'));
+        if (index >= 0) navLinks[index].classList.add('active');
+    }
+    changeActiveLink();
+    window.addEventListener('scroll', changeActiveLink);
+
+    navLinks.forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        navMenu.classList.remove('show');
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 70,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // --- Contact Form ---
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('感谢您的留言！在实际部署中，这将发送您的消息。');
+      this.reset();
+    });
+
+    // --- Scroll Animations ---
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('section, .skill-card, .project-card, .feature-card');
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.3;
+        if (elementPosition < screenPosition) {
+          element.style.opacity = 1;
+          element.style.transform = 'translateY(0)';
+        }
+      });
+    };
+
+    document.querySelectorAll('section, .skill-card, .project-card, .feature-card').forEach(el => {
+      el.style.opacity = 0;
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    });
+    window.addEventListener('scroll', animateOnScroll);
+    window.dispatchEvent(new Event('scroll'));
+
+    // --- Enhanced Features Logic ---
+
+    // 1. To-Do List with localStorage
+    const todoApp = {
+        init() {
+            this.todoList = document.getElementById('todo-list');
+            this.newTodoInput = document.getElementById('new-todo');
+            this.addButton = document.getElementById('add-todo');
+            this.todos = JSON.parse(localStorage.getItem('todos')) || [];
+            this.render();
+            this.bindEvents();
+        },
+        bindEvents() {
+            this.addButton.addEventListener('click', () => this.addTodo());
+            this.newTodoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.addTodo();
             });
-        });
-        
-        // 项目筛选
-        const projectFilters = document.querySelectorAll('.project-filter');
-        const projectCards = document.querySelectorAll('.project-card');
-        
-        projectFilters.forEach(filter => {
-            filter.addEventListener('click', () => {
-                // 移除所有筛选器的活动类
-                projectFilters.forEach(f => {
-                    f.classList.remove('active', 'bg-primary', 'text-white');
-                    f.classList.add('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
-                });
-                
-                // 为点击的筛选器添加活动类
-                filter.classList.add('active', 'bg-primary', 'text-white');
-                filter.classList.remove('bg-gray-200', 'dark:bg-gray-800', 'hover:bg-gray-300', 'dark:hover:bg-gray-700');
-                
-                const filterValue = filter.getAttribute('data-filter');
-                
-                // 根据筛选器显示/隐藏项目
-                projectCards.forEach(card => {
-                    if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                        card.style.display = 'block';
+        },
+        addTodo() {
+            const text = this.newTodoInput.value.trim();
+            if (text) {
+                this.todos.push({ id: Date.now(), text, completed: false });
+                this.saveAndRender();
+                this.newTodoInput.value = '';
+                this.newTodoInput.focus();
+            }
+        },
+        removeTodo(id) {
+            this.todos = this.todos.filter(todo => todo.id !== id);
+            this.saveAndRender();
+        },
+        toggleComplete(id) {
+             this.todos = this.todos.map(todo =>
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            );
+            this.saveAndRender();
+        },
+        saveAndRender() {
+            localStorage.setItem('todos', JSON.stringify(this.todos));
+            this.render();
+        },
+        render() {
+            this.todoList.innerHTML = '';
+            this.todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''}>
+                    <span class="todo-item-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                    <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                `;
+                li.querySelector('input').addEventListener('change', () => this.toggleComplete(todo.id));
+                li.querySelector('.delete-btn').addEventListener('click', () => this.removeTodo(todo.id));
+                this.todoList.appendChild(li);
+            });
+        }
+    };
+    todoApp.init();
+
+    // 2. Markdown Editor with Marked & Prism
+    const markdownEditor = {
+        init() {
+            this.input = document.getElementById('markdown-input');
+            this.preview = document.getElementById('preview');
+            
+            // Load saved content or set default
+            this.input.value = localStorage.getItem('markdown-content') || 
+                `# 欢迎使用 Markdown 编辑器\n\n这是一个实时预览的编辑器。\n\n## 功能\n- 实时预览\n- 代码高亮\`\`\`javascript\nfunction hello() {\n  console.log("Hello, world!");\n}\n\`\`\``;
+            
+            this.renderPreview();
+            this.bindEvents();
+        },
+        bindEvents() {
+            this.input.addEventListener('input', () => {
+                localStorage.setItem('markdown-content', this.input.value);
+                this.renderPreview();
+            });
+        },
+        renderPreview() {
+            // Set options for marked
+            marked.setOptions({
+                highlight: function(code, lang) {
+                    if (Prism.languages[lang]) {
+                        return Prism.highlight(code, Prism.languages[lang], lang);
                     } else {
-                        card.style.display = 'none';
+                        return code;
                     }
-                });
+                },
+                langPrefix: 'language-'
             });
-        });
-        
-        // 导航栏滚动效果
-        const navbar = document.getElementById('navbar');
-        const backToTopButton = document.getElementById('back-to-top');
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('py-2', 'shadow-md');
-                navbar.classList.remove('py-4', 'shadow-sm');
-                
-                backToTopButton.classList.remove('opacity-0', 'translate-y-10');
-                backToTopButton.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                navbar.classList.add('py-4', 'shadow-sm');
-                navbar.classList.remove('py-2', 'shadow-md');
-                
-                backToTopButton.classList.add('opacity-0', 'translate-y-10');
-                backToTopButton.classList.remove('opacity-100', 'translate-y-0');
-            }
-        });
-        
-        // 锚点链接平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // 返回顶部按钮
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-        
-        // 表单提交
-        const contactForm = document.querySelector('#contact form');
-        
-        if (contactForm) {
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                // 在实际实现中，你会将表单数据发送到服务器
-                alert(currentLang === 'zh' ? '感谢您的留言！我会尽快回复您。' : 'Thank you for your message! I will get back to you soon.');
-                contactForm.reset();
-            });
+            
+            this.preview.innerHTML = marked.parse(this.input.value);
+            // Re-run Prism highlighting on the new content
+            Prism.highlightAllUnder(this.preview);
         }
-    </script>
+    };
+    markdownEditor.init();
+
+    // 3. 3D Model Viewer Placeholder (Three.js)
+    // Note: Loading a real model requires a model file (e.g., gltf). 
+    // This is a basic scene setup placeholder.
+    const modelViewer = {
+        init() {
+            const container = document.getElementById('model-container');
+            if (!container) return; // In case the element is not found
+
+            // --- Three.js Basic Scene Setup ---
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a1a);
+
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.innerHTML = ''; // Clear placeholder
+            container.appendChild(renderer.domElement);
+
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            // Create a simple cube as a placeholder for the model
+            const geometry = new THREE.BoxGeometry();
+            // const material = new THREE.MeshStandardMaterial({ color: 0x2962FF });
+            // Use a more interesting material
+            const material = new THREE.MeshPhongMaterial({ color: 0x2962FF, shininess: 90 });
+            
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            // Add orbit controls equivalent logic (simple rotation)
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            // Animation loop
+            const animate = () => {
+                requestAnimationFrame(animate);
+                
+                // Rotate cube based on mouse position for interactivity
+                cube.rotation.x += (mouseY * 0.5 - cube.rotation.x) * 0.05;
+                cube.rotation.y += (mouseX * 0.5 - cube.rotation.y) * 0.05;
+                
+                // Constant slow rotation
+                cube.rotation.x += 0.005;
+                cube.rotation.y += 0.01;
+
+                renderer.render(scene, camera);
+            };
+            animate();
+        }
+    };
+    // Initialize the 3D viewer after the page has loaded
+    window.addEventListener('load', () => {
+        modelViewer.init();
+    });
+
+    // --- 新增功能：图片容错处理 ---
+    function loadBackupImage(img) {
+      img.onerror = null; // 防止无限循环
+      const backups = img.dataset.backup ? img.dataset.backup.split(',') : [];
+      if (backups.length > 0) {
+        img.src = backups.shift().trim(); // 尝试下一个
+        img.dataset.backup = backups.join(',');
+        img.onerror = () => loadBackupImage(img); // 继续尝试直到耗尽
+      } else {
+        // 如果没有备用源或都失败了，使用默认 Base64 占位图
+        img.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMzAwIDIwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzIwMmMyZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4Yjk0OWUiPkFsbCBTYWZlIFNvdXJjZXMgRmFpbGVkPC90ZXh0Pjwvc3ZnPg==';
+      }
+    }
+
+    // --- 新增功能：模态框 ---
+    function openToolInModal(url) {
+      const modal = document.getElementById('toolModal');
+      const iframe = modal.querySelector('iframe');
+      iframe.src = url;
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('toolModal');
+      const iframe = modal.querySelector('iframe');
+      iframe.src = ''; // 卸载内容
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; // 恢复背景滚动
+    }
+
+    // 点击遮罩关闭
+    window.onclick = function(event) {
+      const modal = document.getElementById('toolModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+
+  </script>
 </body>
 </html>
-    
