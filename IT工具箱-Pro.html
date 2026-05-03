@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT-Tools Pro - IT工具箱</title>
+<style>
+:root{--bg-p:#0a0e14;--bg-s:#111820;--bg-c:#151c27;--bg-i:#0d1117;--bd:#1e2a3a;--bd-f:#00e5a0;--t1:#e6edf3;--t2:#8b949e;--t3:#484f58;--ac:#00e5a0;--ac-d:rgba(0,229,160,.1);--ac-g:rgba(0,229,160,.15);--cy:#00d4ff;--cy-d:rgba(0,212,255,.1);--or:#ff8c42;--or-d:rgba(255,140,66,.1);--rd:#ff4757;--rd-d:rgba(255,71,87,.1);--yl:#ffc048;--yl-d:rgba(255,192,72,.1);--pu:#a78bfa;--pu-d:rgba(167,139,250,.1);--r:8px;--rl:12px;--glow:0 0 15px rgba(0,229,160,.3);--glow-sm:0 0 8px rgba(0,229,160,.2)}
+.light{--bg-p:#f0f4f8;--bg-s:#ffffff;--bg-c:#f8fafc;--bg-i:#ffffff;--bd:#d1d9e6;--bd-f:#00875a;--t1:#1a2332;--t2:#5a6978;--t3:#8896a7;--ac:#00875a;--ac-d:rgba(0,135,90,.08);--ac-g:rgba(0,135,90,.12);--cy:#0070b8;--cy-d:rgba(0,112,184,.08);--or:#c46b2a;--or-d:rgba(196,107,42,.08);--rd:#c0323f;--rd-d:rgba(192,50,63,.08);--yl:#b88a1a;--yl-d:rgba(184,138,26,.08);--pu:#7c5cbf;--pu-d:rgba(124,92,191,.08);--glow:0 0 12px rgba(0,135,90,.15);--glow-sm:0 0 6px rgba(0,135,90,.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg-p);color:var(--t1);line-height:1.6;height:100vh;overflow:hidden;transition:background .4s,color .4s}
+/* Sci-fi scanline overlay */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);mix-blend-mode:overlay}
+.light body::after{background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.015) 2px,rgba(0,0,0,.015) 4px)}
+/* Hover glow effect */
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--ac);box-shadow:var(--glow-sm)}
+.btn-p{box-shadow:none}.btn-p:hover{box-shadow:var(--glow)}
+.btn-s:hover{box-shadow:var(--glow-sm)}
+.tool-card{position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(0,229,160,.04) 0%,transparent 70%);opacity:0;transition:opacity .4s;pointer-events:none}
+.tool-card:hover::before{opacity:1}
+.tool-card:hover{box-shadow:var(--glow),0 8px 32px rgba(0,229,160,.06)}
+.stat-card{position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;bottom:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(0,229,160,.06) 0%,transparent 70%);pointer-events:none}
+.stat-card:hover{box-shadow:var(--glow-sm)}
+/* QR code frame */
+.qr-frame{display:inline-block;padding:16px;border:1px solid var(--ac);border-radius:var(--rl);background:var(--bg-c);position:relative;box-shadow:var(--glow-sm);margin:16px auto}
+.qr-frame::before{content:'SCAN';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--bg-c);padding:0 12px;font-size:.6rem;font-family:monospace;color:var(--ac);letter-spacing:4px;font-weight:700}
+.qr-frame::after{content:'';position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:1px dashed var(--ac-d);border-radius:6px;pointer-events:none}
+.qr-frame img,.qr-frame canvas{display:block;margin:0 auto;border-radius:4px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg-s)}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+[v-cloak]{display:none}
+.app{display:flex;height:100vh}
+.sidebar{width:280px;min-width:280px;background:var(--bg-s);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:100;transition:background .4s}
+.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--ac-g),transparent);pointer-events:none;animation:sideScan 4s ease-in-out infinite}
+@keyframes sideScan{0%,100%{opacity:0}50%{opacity:1}}
+.sidebar-hd{padding:20px;border-bottom:1px solid var(--bd)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;color:var(--ac);font-family:monospace;text-shadow:0 0 8px var(--ac-g)}
+.logo-ic{width:32px;height:32px;background:var(--ac-d);border:1px solid var(--ac);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:var(--glow-sm);animation:logoPulse 3s ease-in-out infinite}
+@keyframes logoPulse{0%,100%{box-shadow:var(--glow-sm)}50%{box-shadow:var(--glow)}}
+.search-box{padding:12px 20px;border-bottom:1px solid var(--bd)}
+.search-wrap{position:relative}
+.search-ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.85rem}
+.search-input{width:100%;background:var(--bg-i);border:1px solid var(--bd);border-radius:var(--r);padding:8px 12px 8px 34px;color:var(--t1);font-size:.85rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--ac)}
+.nav-list{flex:1;overflow-y:auto;padding:8px 0}
+.nav-cat{padding:8px 20px 4px;font-size:.7rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;font-family:monospace}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;cursor:pointer;font-size:.85rem;color:var(--t2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{background:var(--ac-d);color:var(--t1)}
+.nav-item.active{background:var(--ac-d);color:var(--ac);border-left-color:var(--ac);box-shadow:inset 0 0 12px var(--ac-g)}
+.nav-item .ic{width:20px;text-align:center;font-size:.8rem}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:16px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:var(--bg-s);transition:background .4s,border-color .4s}
+.topbar-l{display:flex;align-items:center;gap:12px}
+.menu-btn{display:none;background:none;border:none;color:var(--t2);font-size:1.2rem;cursor:pointer;padding:4px}
+.topbar-t{font-family:monospace;font-size:1rem;font-weight:600}
+.topbar-b{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--ac-d);color:var(--ac);font-family:monospace}
+.content{flex:1;overflow-y:auto;padding:24px}
+.dashboard{max-width:1200px;margin:0 auto}
+.dash-hd{margin-bottom:32px}
+.dash-hd h1{font-family:monospace;font-size:1.8rem;font-weight:700;margin-bottom:8px;text-shadow:0 0 20px var(--ac-g)}
+.dash-hd h1 span{color:var(--ac);text-shadow:0 0 12px var(--ac-g)}
+.dash-hd p{color:var(--t2);font-size:.9rem}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--rl);padding:20px;transition:border-color .2s}
+.stat-card:hover{border-color:var(--ac)}
+.stat-label{font-size:.75rem;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;font-family:monospace;margin-bottom:8px}
+.stat-val{font-family:monospace;font-size:2rem;font-weight:700;color:var(--ac)}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tool-card{background:var(--bg-c);border:1px solid var(--bd);border-radius:var(--rl);padding:20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px}
+.tool-card:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,229,160,.08)}
+.tool-card-ic{width:42px;height:42px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:all .3s}
+.tool-card:hover .tool-card-ic{box-shadow:var(--glow-sm);transform:scale(1.08)}
+.tool-card-ic.g{background:var(--ac-d);color:var(--ac)}.tool-card-ic.c{background:var(--cy-d);color:var(--cy)}.tool-card-ic.o{background:var(--or-d);color:var(--or)}.tool-card-ic.p{background:var(--pu-d);color:var(--pu)}.tool-card-ic.r{background:var(--rd-d);color:var(--rd)}.tool-card-ic.y{background:var(--yl-d);color:var(--yl)}
+.tool-card-name{font-size:.9rem;font-weight:500}
+.tool-card-desc{font-size:.75rem;color:var(--t3);margin-top:2px}
+.cat-hd{font-family:monospace;font-size:.75rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+.cat-hd::after{content:'';flex:1;height:1px;background:var(--bd)}
+.tool-page{max-width:900px;margin:0 auto}
+.tool-page-hd{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.back-btn{background:none;border:1px solid var(--bd);color:var(--t2);width:36px;height:36px;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:1rem}
+.back-btn:hover{border-color:var(--ac);color:var(--ac)}
+.tool-title{font-family:monospace;font-size:1.3rem;font-weight:600}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:.8rem;font-weight:500;color:var(--t2);margin-bottom:6px;font-family:monospace}
+.fi,.fs,.ft{width:100%;background:var(--bg-i);border:1px solid var(--bd);border-radius:var(--r);padding:10px 14px;color:var(--t1);font-size:.9rem;font-family:monospace;outline:none;transition:border-color .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--ac)}
+.ft{resize:vertical;min-height:100px}
+.fs{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:none;border-radius:var(--r);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-p{background:var(--ac);color:var(--bg-p)}.btn-p:hover{background:#00ffb3;box-shadow:0 0 20px rgba(0,229,160,.25)}
+.btn-s{background:var(--bg-c);color:var(--t2);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
+.bg{display:flex;gap:8px;flex-wrap:wrap}
+.ra{background:var(--bg-i);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-top:16px;position:relative}
+.rc{font-family:monospace;font-size:.85rem;color:var(--ac);white-space:pre-wrap;word-break:break-all;line-height:1.8;max-height:400px;overflow-y:auto}
+.rl{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-family:monospace}
+.cp{position:absolute;top:12px;right:12px;background:var(--bg-c);border:1px solid var(--bd);color:var(--t2);padding:4px 10px;border-radius:var(--r);font-size:.75rem;cursor:pointer;transition:all .2s;font-family:monospace}
+.cp:hover,.cp.on{border-color:var(--ac);color:var(--ac)}
+.hl{display:flex;flex-direction:column;gap:8px}
+.hi{background:var(--bg-i);border:1px solid var(--bd);border-radius:var(--r);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hk{font-family:monospace;font-size:.75rem;color:var(--t3);min-width:50px}
+.hv{font-family:monospace;font-size:.8rem;color:var(--ac);word-break:break-all;flex:1}
+.sb{padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem;font-weight:600}
+.sb2{background:var(--ac-d);color:var(--ac)}.sb3{background:var(--cy-d);color:var(--cy)}.sb4{background:var(--or-d);color:var(--or)}.sb5{background:var(--rd-d);color:var(--rd)}
+.sbar{height:4px;background:var(--bd);border-radius:2px;margin-top:8px;overflow:hidden}
+.sfill{height:100%;border-radius:2px;transition:all .3s}
+.stbl{width:100%;border-collapse:collapse}
+.stbl th,.stbl td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--bd);font-size:.85rem}
+.stbl th{font-family:monospace;font-size:.75rem;color:var(--t3);text-transform:uppercase}
+.stbl tr:hover td{background:var(--ac-d)}
+.cron-f{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.cron-f label{display:block;font-size:.7rem;color:var(--t3);margin-bottom:4px;font-family:monospace}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg-c);border:1px solid var(--ac);color:var(--ac);padding:10px 20px;border-radius:var(--r);font-size:.85rem;font-family:monospace;z-index:1000;animation:toastI .3s ease,toastO .3s ease 1.7s forwards;box-shadow:0 4px 20px rgba(0,229,160,.15)}
+@keyframes toastI{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes toastO{from{opacity:1}to{opacity:0}}
+.so{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-family:monospace;margin:2px}
+.tag-g{background:var(--ac-d);color:var(--ac)}.tag-o{background:var(--or-d);color:var(--or)}
+@media(max-width:768px){.sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.so.show{display:block}.menu-btn{display:block}.content{padding:16px}.fr{grid-template-columns:1fr}.tool-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.stats-row{grid-template-columns:repeat(2,1fr)}.dash-hd h1{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+<div class="app">
+<div class="so" :class="{show:sidebarOpen}" @click="sidebarOpen=false"></div>
+<aside class="sidebar" :class="{open:sidebarOpen}">
+<div class="sidebar-hd"><div class="logo"><div class="logo-ic">&gt;_</div><span>IT-Tools Pro</span></div></div>
+<div class="search-box"><div class="search-wrap"><span class="search-ic">&#128269;</span><input class="search-input" v-model="searchQuery" placeholder="搜索工具..."></div></div>
+<nav class="nav-list">
+<div v-for="cat in filteredCategories" :key="cat.name">
+<div class="nav-cat">{{cat.name}}</div>
+<div v-for="tool in cat.tools" :key="tool.id" class="nav-item" :class="{active:currentTool===tool.id}" @click="openTool(tool.id)">
+<span class="ic">{{tool.icon}}</span>{{tool.name}}
+</div>
+</div>
+<div v-if="filteredCategories.length===0" style="padding:20px;text-align:center;color:var(--t3);font-size:.85rem">未找到工具</div>
+</nav>
+</aside>
+<main class="main">
+<div class="topbar"><div class="topbar-l">
+<button class="menu-btn" @click="sidebarOpen=!sidebarOpen">&#9776;</button>
+<span class="topbar-t" v-if="currentToolName">{{currentToolName}}</span>
+<span class="topbar-t" v-else>IT-Tools Pro</span>
+<span class="topbar-b" v-if="currentTool">v2.0</span>
+</div><div style="display:flex;align-items:center;gap:12px">
+<button class="btn btn-s" @click="toggleTheme" style="padding:6px 12px;font-size:.8rem" :title="isLight?'切换暗色':'切换亮色'">{{isLight ? '&#9790; 夜间' : '&#9788; 日间'}}</button>
+<span style="font-size:.75rem;color:var(--t3);font-family:monospace">{{toolCount}} tools</span>
+</div></div>
+<div class="content">
+
+<!-- Dashboard -->
+<div v-if="!currentTool" class="dashboard">
+<div class="dash-hd"><h1>&gt; IT-Tools <span>Pro</span></h1><p>开发者与IT从业者的瑞士军刀 — 所有工具均在浏览器本地运行</p></div>
+<div class="stats-row">
+<div class="stat-card"><div class="stat-label">工具总数</div><div class="stat-val">{{toolCount}}</div></div>
+<div class="stat-card"><div class="stat-label">分类</div><div class="stat-val">{{categories.length}}</div></div>
+<div class="stat-card"><div class="stat-label">已收藏</div><div class="stat-val">{{favorites.length}}</div></div>
+<div class="stat-card"><div class="stat-label">运行环境</div><div class="stat-val" style="font-size:1rem;color:var(--cy)">LOCAL</div></div>
+</div>
+<template v-for="cat in categories" :key="cat.name">
+<div class="cat-hd">{{cat.name}}</div>
+<div class="tool-grid">
+<div v-for="tool in cat.tools" :key="tool.id" class="tool-card" @click="openTool(tool.id)">
+<div class="tool-card-ic" :class="cat.color"><span>{{tool.icon}}</span></div>
+<div><div class="tool-card-name">{{tool.name}}</div><div class="tool-card-desc">{{tool.desc}}</div></div>
+</div>
+</div>
+</template>
+</div>
+
+<!-- Tool Pages -->
+<div v-if="currentTool" class="tool-page">
+<div class="tool-page-hd">
+<button class="back-btn" @click="currentTool=null">&larr;</button>
+<span class="tool-title">{{currentToolName}}</span>
+</div>
+
+<!-- UUID -->
+<div v-if="currentTool==='uuid'">
+<div class="fg"><label class="fl">生成数量</label><input class="fi" type="number" v-model.number="uuid.count" min="1" max="100" style="width:120px"></div>
+<div class="fg"><label class="fl">版本</label><div class="bg">
+<button class="btn" :class="uuid.v===4?'btn-p':'btn-s'" @click="uuid.v=4">v4 随机</button>
+<button class="btn" :class="uuid.v===1?'btn-p':'btn-s'" @click="uuid.v=1">v1 时间戳</button>
+</div></div>
+<button class="btn btn-p" @click="genUUID">生成</button>
+<div class="ra" v-if="uuid.result"><button class="cp" :class="{on:uuid.c}" @click="cp(uuid.result,'uuid')">{{uuid.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{uuid.result}}</div></div>
+</div>
+
+<!-- ULID -->
+<div v-if="currentTool==='ulid'">
+<div class="fg"><label class="fl">生成数量</label><input class="fi" type="number" v-model.number="ulid.count" min="1" max="100" style="width:120px"></div>
+<button class="btn btn-p" @click="genULID">生成</button>
+<div class="ra" v-if="ulid.result"><button class="cp" :class="{on:ulid.c}" @click="cp(ulid.result,'ulid')">{{ulid.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{ulid.result}}</div></div>
+</div>
+
+<!-- Token -->
+<div v-if="currentTool==='token'">
+<div class="fr"><div class="fg"><label class="fl">长度</label><input class="fi" type="number" v-model.number="token.len" min="4" max="512"></div><div class="fg"><label class="fl">数量</label><input class="fi" type="number" v-model.number="token.cnt" min="1" max="50"></div></div>
+<div class="fg"><label class="fl">字符集</label><div class="bg">
+<button class="btn" :class="token.cs==='a'?'btn-p':'btn-s'" @click="token.cs='a'">字母+数字</button>
+<button class="btn" :class="token.cs==='h'?'btn-p':'btn-s'" @click="token.cs='h'">十六进制</button>
+<button class="btn" :class="token.cs==='s'?'btn-p':'btn-s'" @click="token.cs='s'">URL安全</button>
+</div></div>
+<button class="btn btn-p" @click="genToken">生成</button>
+<div class="ra" v-if="token.result"><button class="cp" :class="{on:token.c}" @click="cp(token.result,'token')">{{token.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{token.result}}</div></div>
+</div>
+
+<!-- Hash -->
+<div v-if="currentTool==='hash'">
+<div class="fg"><label class="fl">输入文本</label><textarea class="ft" v-model="hash.input" placeholder="输入要计算哈希的文本..."></textarea></div>
+<button class="btn btn-p" @click="calcHash">计算哈希</button>
+<div class="hl" v-if="hash.result" style="margin-top:16px">
+<div class="hi" v-for="(val,key) in hash.result" :key="key">
+<span class="hk">{{key}}</span><span class="hv">{{val}}</span>
+<button class="cp" style="position:static" @click="cpSingle(val)">复制</button>
+</div>
+</div>
+</div>
+
+<!-- HMAC -->
+<div v-if="currentTool==='hmac'">
+<div class="fg"><label class="fl">密钥</label><input class="fi" v-model="hmac.key" placeholder="输入密钥"></div>
+<div class="fg"><label class="fl">消息</label><textarea class="ft" v-model="hmac.msg" placeholder="输入消息"></textarea></div>
+<div class="fg"><label class="fl">算法</label><select class="fs" v-model="hmac.algo">
+<option value="HmacMD5">HMAC-MD5</option><option value="HmacSHA1">HMAC-SHA1</option>
+<option value="HmacSHA256" selected>HMAC-SHA256</option><option value="HmacSHA512">HMAC-SHA512</option>
+</select></div>
+<button class="btn btn-p" @click="calcHMAC">生成 HMAC</button>
+<div class="ra" v-if="hmac.result"><button class="cp" :class="{on:hmac.c}" @click="cp(hmac.result,'hmac')">{{hmac.c?'已复制':'复制'}}</button><div class="rl">HMAC</div><div class="rc">{{hmac.result}}</div></div>
+</div>
+
+<!-- Password -->
+<div v-if="currentTool==='pwd'">
+<div class="fg"><label class="fl">输入密码</label><input class="fi" v-model="pwd.input" type="text" placeholder="输入密码进行分析" @input="analyzePwd"></div>
+<div v-if="pwd.input" style="margin-top:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<span style="font-size:.85rem">密码强度</span><span class="tag" :class="pwd.tc">{{pwd.level}}</span>
+</div>
+<div class="sbar"><div class="sfill" :style="{width:pwd.score*20+'%',background:pwd.col}"></div></div>
+<div class="ra" style="margin-top:16px"><div class="rl">分析详情</div><div class="rc">{{pwd.details}}</div></div>
+</div>
+</div>
+
+<!-- BIP39 -->
+<div v-if="currentTool==='bip39'">
+<div class="fg"><label class="fl">单词数量</label><select class="fs" v-model.number="bip39.count" style="width:160px">
+<option :value="12">12 词</option><option :value="15">15 词</option><option :value="18">18 词</option>
+<option :value="21">21 词</option><option :value="24">24 词</option>
+</select></div>
+<button class="btn btn-p" @click="genBIP39">生成助记词</button>
+<div class="ra" v-if="bip39.result" style="margin-top:16px">
+<button class="cp" :class="{on:bip39.c}" @click="cp(bip39.result,'bip39')">{{bip39.c?'已复制':'复制'}}</button>
+<div class="rl">BIP39 助记词</div><div class="rc" style="font-size:1rem;line-height:2.2">{{bip39.result}}</div>
+</div>
+</div>
+
+<!-- Base64 -->
+<div v-if="currentTool==='base64'">
+<div class="fr"><div class="fg"><label class="fl">明文</label><textarea class="ft" v-model="b64.input" placeholder="输入文本..." style="min-height:200px"></textarea></div>
+<div class="fg"><label class="fl">Base64</label><textarea class="ft" v-model="b64.output" placeholder="输入Base64..." style="min-height:200px"></textarea></div></div>
+<div class="bg"><button class="btn btn-p" @click="b64Enc">编码 &rarr;</button><button class="btn btn-s" @click="b64Dec">&larr; 解码</button></div>
+</div>
+
+<!-- URL -->
+<div v-if="currentTool==='url'">
+<div class="fg"><label class="fl">输入</label><textarea class="ft" v-model="url.input" placeholder="输入URL或文本..."></textarea></div>
+<div class="bg">
+<button class="btn btn-p" @click="urlEnc">URL 编码</button><button class="btn btn-s" @click="urlDec">URL 解码</button>
+<button class="btn btn-s" @click="urlCompEnc">组件编码</button><button class="btn btn-s" @click="urlCompDec">组件解码</button>
+</div>
+<div class="ra" v-if="url.result" style="margin-top:16px"><button class="cp" :class="{on:url.c}" @click="cp(url.result,'url')">{{url.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{url.result}}</div></div>
+</div>
+
+<!-- DateTime -->
+<div v-if="currentTool==='dt'">
+<div class="fg"><label class="fl">当前时间</label><div style="font-family:monospace;font-size:1.4rem;color:var(--ac);margin-bottom:8px">{{dt.now}}</div></div>
+<div class="fg"><label class="fl">输入时间戳或日期</label><input class="fi" v-model="dt.input" placeholder="时间戳(秒/毫秒) 或日期字符串"></div>
+<button class="btn btn-p" @click="convertDT">转换</button>
+<div class="ra" v-if="dt.result" style="margin-top:16px"><button class="cp" :class="{on:dt.c}" @click="cp(dt.result,'dt')">{{dt.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{dt.result}}</div></div>
+</div>
+
+<!-- Case -->
+<div v-if="currentTool==='case'">
+<div class="fg"><label class="fl">输入文本</label><textarea class="ft" v-model="cs.input" placeholder="输入文本..."></textarea></div>
+<div class="bg" style="margin-bottom:16px">
+<button class="btn btn-s" @click="cs.result=cs.input.toUpperCase()">UPPER</button>
+<button class="btn btn-s" @click="cs.result=cs.input.toLowerCase()">lower</button>
+<button class="btn btn-s" @click="cs.result=titleCase(cs.input)">Title Case</button>
+<button class="btn btn-s" @click="cs.result=camelCase(cs.input)">camelCase</button>
+<button class="btn btn-s" @click="cs.result=snakeCase(cs.input)">snake_case</button>
+<button class="btn btn-s" @click="cs.result=kebabCase(cs.input)">kebab-case</button>
+<button class="btn btn-s" @click="cs.result=constCase(cs.input)">CONSTANT_CASE</button>
+</div>
+<div class="ra" v-if="cs.result"><button class="cp" :class="{on:cs.c}" @click="cp(cs.result,'cs')">{{cs.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{cs.result}}</div></div>
+</div>
+
+<!-- JWT -->
+<div v-if="currentTool==='jwt'">
+<div class="fg"><label class="fl">JWT Token</label><textarea class="ft" v-model="jwt.input" placeholder="粘贴JWT令牌..."></textarea></div>
+<button class="btn btn-p" @click="parseJWT">解析</button>
+<div v-if="jwt.hdr||jwt.pay" style="margin-top:16px">
+<div class="fr"><div class="ra"><div class="rl">Header</div><div class="rc">{{jwt.hdr}}</div></div>
+<div class="ra"><div class="rl">Payload</div><div class="rc">{{jwt.pay}}</div></div></div>
+<div class="ra" style="margin-top:12px" v-if="jwt.sig"><div class="rl">Signature</div><div class="rc">{{jwt.sig}}</div></div>
+<div class="ra" style="margin-top:12px" v-if="jwt.exp"><div class="rl">过期时间</div><div class="rc">{{jwt.exp}}</div></div>
+</div>
+</div>
+
+<!-- Device -->
+<div v-if="currentTool==='dev'">
+<button class="btn btn-p" @click="getDev" style="margin-bottom:16px">获取设备信息</button>
+<div class="ra" v-if="dev.info"><div class="rl">设备信息</div><div class="rc">{{dev.info}}</div></div>
+</div>
+
+<!-- URL Parser -->
+<div v-if="currentTool==='urlp'">
+<div class="fg"><label class="fl">输入URL</label><input class="fi" v-model="urlp.input" placeholder="https://example.com:8080/path?q=1#hash"></div>
+<button class="btn btn-p" @click="parseURL">分析</button>
+<div class="ra" v-if="urlp.result" style="margin-top:16px"><div class="rl">URL 组件</div><div class="rc">{{urlp.result}}</div></div>
+</div>
+
+<!-- HTTP Status -->
+<div v-if="currentTool==='http'">
+<div class="fg"><input class="fi" v-model="http.search" placeholder="搜索状态码或描述..." style="max-width:400px"></div>
+<div style="overflow-x:auto"><table class="stbl"><thead><tr><th>状态码</th><th>名称</th><th>描述</th></tr></thead>
+<tbody><tr v-for="s in filteredHTTP" :key="s.c"><td><span class="sb" :class="'sb'+Math.floor(s.c/100)">{{s.c}}</span></td><td style="font-weight:500">{{s.n}}</td><td style="color:var(--t2)">{{s.d}}</td></tr></tbody>
+</table></div>
+</div>
+
+<!-- QR -->
+<div v-if="currentTool==='qr'">
+<div class="fg"><label class="fl">输入内容</label><input class="fi" v-model="qr.text" placeholder="文本或URL"></div>
+<div class="fg"><label class="fl">尺寸</label><select class="fs" v-model.number="qr.size" style="width:160px">
+<option :value="128">128x128</option><option :value="200">200x200</option><option :value="300">300x300</option>
+</select></div>
+<button class="btn btn-p" @click="genQR">生成二维码</button>
+<div id="qr-out" class="qr-frame" style="display:none"></div>
+</div>
+
+<!-- WiFi QR -->
+<div v-if="currentTool==='wifi'">
+<div class="fg"><label class="fl">WiFi 名称</label><input class="fi" v-model="wifi.ssid" placeholder="WiFi名称"></div>
+<div class="fg"><label class="fl">密码</label><input class="fi" v-model="wifi.pwd" placeholder="WiFi密码"></div>
+<div class="fg"><label class="fl">加密方式</label><select class="fs" v-model="wifi.sec" style="width:200px">
+<option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">无密码</option>
+</select></div>
+<button class="btn btn-p" @click="genWifiQR">生成 WiFi 二维码</button>
+<div id="wifi-out" class="qr-frame" style="display:none"></div>
+</div>
+
+<!-- JSON Format -->
+<div v-if="currentTool==='json'">
+<div class="fg"><label class="fl">输入 JSON</label><textarea class="ft" v-model="jf.input" placeholder='{ "key": "value" }' style="min-height:200px"></textarea></div>
+<div class="bg">
+<button class="btn btn-p" @click="jsonFmt">美化</button><button class="btn btn-s" @click="jsonMin">压缩</button><button class="btn btn-s" @click="jsonEsc">转义</button>
+</div>
+<div class="ra" v-if="jf.result" style="margin-top:16px"><button class="cp" :class="{on:jf.c}" @click="cp(jf.result,'jf')">{{jf.c?'已复制':'复制'}}</button><div class="rl">结果</div><div class="rc">{{jf.result}}</div></div>
+</div>
+
+<!-- Regex -->
+<div v-if="currentTool==='regex'">
+<div class="fg"><label class="fl">正则表达式</label><input class="fi" v-model="rgx.pat" placeholder="输入正则表达式"></div>
+<div class="fg"><label class="fl">标志</label><div class="bg">
+<button class="btn" :class="rgx.f.includes('g')?'btn-p':'btn-s'" @click="togFlag('g')">g 全局</button>
+<button class="btn" :class="rgx.f.includes('i')?'btn-p':'btn-s'" @click="togFlag('i')">i 忽略大小写</button>
+<button class="btn" :class="rgx.f.includes('m')?'btn-p':'btn-s'" @click="togFlag('m')">m 多行</button>
+</div></div>
+<div class="fg"><label class="fl">测试文本</label><textarea class="ft" v-model="rgx.txt" placeholder="输入测试文本"></textarea></div>
+<button class="btn btn-p" @click="testRgx">测试匹配</button>
+<div class="ra" v-if="rgx.res" style="margin-top:16px"><div class="rl">{{rgx.res.cnt}} 个匹配</div><div class="rc">{{rgx.res.matches}}</div></div>
+<div v-if="rgx.err" style="color:var(--rd);font-size:.85rem;margin-top:8px">{{rgx.err}}</div>
+</div>
+
+<!-- Cron -->
+<div v-if="currentTool==='cron'">
+<div class="fg"><label class="fl">Cron 表达式</label><input class="fi" v-model="cron.expr" placeholder="* * * * *" style="font-size:1.1rem;text-align:center;letter-spacing:2px"></div>
+<div class="cron-f" style="margin-bottom:16px">
+<div><label>分钟 (0-59)</label><input class="fi" v-model="cron.m" placeholder="*"></div>
+<div><label>小时 (0-23)</label><input class="fi" v-model="cron.h" placeholder="*"></div>
+<div><label>日 (1-31)</label><input class="fi" v-model="cron.d" placeholder="*"></div>
+<div><label>月 (1-12)</label><input class="fi" v-model="cron.mo" placeholder="*"></div>
+<div><label>星期 (0-6)</label><input class="fi" v-model="cron.w" placeholder="*"></div>
+</div>
+<button class="btn btn-p" @click="parseCron">解析</button>
+<div class="bg" style="margin-top:8px;margin-bottom:16px">
+<button class="btn btn-s" @click="cronQ('*/5 * * * *')">每5分钟</button>
+<button class="btn btn-s" @click="cronQ('0 * * * *')">每小时</button>
+<button class="btn btn-s" @click="cronQ('0 0 * * *')">每天午夜</button>
+<button class="btn btn-s" @click="cronQ('0 0 * * 1')">每周一</button>
+</div>
+<div class="ra" v-if="cron.result"><div class="rl">解析结果</div><div class="rc">{{cron.result}}</div></div>
+</div>
+
+<!-- Subnet -->
+<div v-if="currentTool==='subnet'">
+<div class="fr"><div class="fg"><label class="fl">IP 地址</label><input class="fi" v-model="sub.ip" placeholder="192.168.1.0"></div>
+<div class="fg"><label class="fl">CIDR 掩码</label><input class="fi" type="number" v-model.number="sub.mask" min="0" max="32" placeholder="24"></div></div>
+<button class="btn btn-p" @click="calcSub">计算</button>
+<div class="ra" v-if="sub.result" style="margin-top:16px"><button class="cp" :class="{on:sub.c}" @click="cp(sub.result,'sub')">{{sub.c?'已复制':'复制'}}</button><div class="rl">子网信息</div><div class="rc">{{sub.result}}</div></div>
+</div>
+
+<!-- MAC -->
+<div v-if="currentTool==='mac'">
+<div class="fg"><label class="fl">MAC 地址</label><input class="fi" v-model="mac.input" placeholder="AA:BB:CC:DD:EE:FF"></div>
+<div class="bg"><button class="btn btn-p" @click="lookupMAC">查找厂商</button><button class="btn btn-s" @click="genMAC">随机生成</button></div>
+<div class="ra" v-if="mac.result" style="margin-top:16px"><div class="rl">结果</div><div class="rc">{{mac.result}}</div></div>
+</div>
+
+<!-- Calculator -->
+<div v-if="currentTool==='calc'">
+<div class="fg"><label class="fl">表达式</label><input class="fi" v-model="calc.input" placeholder="2 + 3 * 4" style="font-size:1.2rem" @keyup.enter="evalCalc"></div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:400px">
+<button class="btn btn-s" v-for="b in calcBtns" :key="b" @click="calcB(b)" style="padding:12px;font-family:monospace;font-size:1rem">{{b}}</button>
+</div>
+<div class="ra" v-if="calc.result" style="margin-top:16px"><div class="rl">结果</div><div class="rc" style="font-size:1.5rem">{{calc.result}}</div></div>
+</div>
+
+<!-- Text Stats -->
+<div v-if="currentTool==='tstat'">
+<div class="fg"><label class="fl">输入文本</label><textarea class="ft" v-model="ts.input" placeholder="输入文本进行统计..." style="min-height:160px"></textarea></div>
+<button class="btn btn-p" @click="calcTS">统计</button>
+<div v-if="ts.result" style="margin-top:16px">
+<div class="stats-row"><div class="stat-card" v-for="(v,k) in ts.result" :key="k">
+<div class="stat-label">{{k}}</div><div class="stat-val" style="font-size:1.3rem">{{v}}</div>
+</div></div>
+</div>
+</div>
+
+<!-- Text Diff -->
+<div v-if="currentTool==='diff'">
+<div class="fr"><div class="fg"><label class="fl">文本 A</label><textarea class="ft" v-model="df.a" style="min-height:200px"></textarea></div>
+<div class="fg"><label class="fl">文本 B</label><textarea class="ft" v-model="df.b" style="min-height:200px"></textarea></div></div>
+<button class="btn btn-p" @click="cmpText">比较差异</button>
+<div class="ra" v-if="df.result" style="margin-top:16px"><div class="rl">差异分析</div><div class="rc">{{df.result}}</div></div>
+</div>
+
+<!-- Lorem -->
+<div v-if="currentTool==='lorem'">
+<div class="fg"><label class="fl">段落数量</label><input class="fi" type="number" v-model.number="lorem.n" min="1" max="20" style="width:120px"></div>
+<button class="btn btn-p" @click="genLorem">生成</button>
+<div class="ra" v-if="lorem.result" style="margin-top:16px"><button class="cp" :class="{on:lorem.c}" @click="cp(lorem.result,'lorem')">{{lorem.c?'已复制':'复制'}}</button><div class="rl">Lorem Ipsum</div><div class="rc">{{lorem.result}}</div></div>
+</div>
+
+<!-- IPv6 ULA -->
+<div v-if="currentTool==='ula'">
+<button class="btn btn-p" @click="genULA">生成 IPv6 ULA</button>
+<div class="ra" v-if="ula.result" style="margin-top:16px"><button class="cp" :class="{on:ula.c}" @click="cp(ula.result,'ula')">{{ula.c?'已复制':'复制'}}</button><div class="rl">ULA 地址</div><div class="rc">{{ula.result}}</div></div>
+</div>
+
+</div>
+</div>
+</main>
+</div>
+<div class="toast" v-if="toast.show">{{toast.text}}</div>
+</div>
+
+<!-- Vue 3 CDN with fallback -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script>
+if(typeof Vue==='undefined'){
+  document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"><\/scr'+'ipt>');
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// Wait for scripts to load
+(function(){
+function initApp(){
+if(typeof Vue==='undefined'){
+  setTimeout(initApp, 100);
+  return;
+}
+var createApp = Vue.createApp;
+
+// BIP39 subset (first 64 of 2048 words for compact size)
+var BIP39 = 'abandon ability able about above absent absorb abstract absurd abuse access accident account accuse achieve acid acoustic acquire across act action actor actress actual adapt add addict address adjust admit adult advance advice aerobic affair afford afraid again age agent agree ahead aim air airport aisle alarm album'.split(' ');
+
+var HTTP_CODES = [
+  {c:100,n:'Continue',d:'继续'},{c:101,n:'Switching Protocols',d:'切换协议'},
+  {c:200,n:'OK',d:'请求成功'},{c:201,n:'Created',d:'已创建'},{c:204,n:'No Content',d:'无内容'},{c:206,n:'Partial Content',d:'部分内容'},
+  {c:301,n:'Moved Permanently',d:'永久重定向'},{c:302,n:'Found',d:'临时重定向'},{c:304,n:'Not Modified',d:'未修改'},{c:307,n:'Temporary Redirect',d:'临时重定向'},{c:308,n:'Permanent Redirect',d:'永久重定向'},
+  {c:400,n:'Bad Request',d:'错误请求'},{c:401,n:'Unauthorized',d:'未授权'},{c:403,n:'Forbidden',d:'禁止访问'},{c:404,n:'Not Found',d:'未找到'},{c:405,n:'Method Not Allowed',d:'方法不允许'},{c:409,n:'Conflict',d:'冲突'},{c:410,n:'Gone',d:'已删除'},{c:413,n:'Payload Too Large',d:'请求体过大'},{c:415,n:'Unsupported Media Type',d:'不支持的媒体类型'},{c:422,n:'Unprocessable Entity',d:'无法处理的实体'},{c:429,n:'Too Many Requests',d:'请求过多'},
+  {c:500,n:'Internal Server Error',d:'服务器内部错误'},{c:501,n:'Not Implemented',d:'未实现'},{c:502,n:'Bad Gateway',d:'网关错误'},{c:503,n:'Service Unavailable',d:'服务不可用'},{c:504,n:'Gateway Timeout',d:'网关超时'}
+];
+
+var MAC_V = {'00:50:56':'VMware','00:0C:29':'VMware','00:1A:11':'Google','54:60:09':'Google','00:1B:63':'Apple','A4:83:E7':'Apple','F0:18:98':'Apple','00:1E:C2':'Apple','3C:22:FB':'Apple','00:1D:D8':'Microsoft','28:18:78':'Microsoft','7C:1E:52':'Microsoft','B8:31:B5':'Microsoft','20:F3:75':'Huawei','00:E0:FC':'Huawei','48:46:FB':'Huawei','5C:7D:5E':'Xiaomi','64:CC:2E':'Xiaomi','00:03:7F':'Aethra','00:13:72':'Cisco'};
+
+createApp({
+  data: function(){
+    return {
+      sidebarOpen:false, searchQuery:'', currentTool:null, favorites:[], toast:{show:false,text:''}, isLight:false,
+      dt:{now:'',input:'',result:'',c:false},
+      uuid:{count:5,v:4,result:'',c:false},
+      ulid:{count:5,result:'',c:false},
+      token:{len:32,cnt:5,cs:'a',result:'',c:false},
+      hash:{input:'',result:null},
+      hmac:{key:'',msg:'',algo:'HmacSHA256',result:'',c:false},
+      pwd:{input:'',score:0,level:'',col:'',tc:'',details:''},
+      bip39:{count:12,result:'',c:false},
+      b64:{input:'',output:''},
+      url:{input:'',result:'',c:false},
+      cs:{input:'',result:'',c:false},
+      jwt:{input:'',hdr:'',pay:'',sig:'',exp:''},
+      dev:{info:''},
+      urlp:{input:'',result:''},
+      http:{search:''},
+      qr:{text:'',size:200},
+      wifi:{ssid:'',pwd:'',sec:'WPA'},
+      jf:{input:'',result:'',c:false},
+      rgx:{pat:'',txt:'',f:'g',res:null,err:''},
+      cron:{m:'*',h:'*',d:'*',mo:'*',w:'*',expr:'',result:''},
+      sub:{ip:'',mask:24,result:'',c:false},
+      mac:{input:'',result:''},
+      calc:{input:'',result:''},
+      calcBtns:['7','8','9','/','C','4','5','6','*','(','1','2','3','-',')','0','.','=','+','<-'],
+      ts:{input:'',result:null},
+      df:{a:'',b:'',result:''},
+      lorem:{n:3,result:'',c:false},
+      ula:{result:'',c:false},
+      categories:[
+        {name:'加密与安全',color:'g',tools:[
+          {id:'uuid',name:'UUID 生成器',icon:'*',desc:'v1/v4 UUID标准生成'},
+          {id:'ulid',name:'ULID 生成器',icon:'*',desc:'时间排序的唯一ID'},
+          {id:'token',name:'Token 生成器',icon:'#',desc:'随机令牌/密钥生成'},
+          {id:'hash',name:'Hash 计算',icon:'H',desc:'MD5/SHA1/SHA256/SHA512'},
+          {id:'hmac',name:'HMAC 生成器',icon:'M',desc:'带密钥的哈希认证'},
+          {id:'pwd',name:'密码强度分析',icon:'!',desc:'实时密码强度评估'},
+          {id:'bip39',name:'BIP39 助记词',icon:'K',desc:'加密钱包助记词生成'}
+        ]},
+        {name:'编码与转换',color:'c',tools:[
+          {id:'base64',name:'Base64 编解码',icon:'B',desc:'文本Base64编解码'},
+          {id:'url',name:'URL 编解码',icon:'U',desc:'URL编解码'},
+          {id:'dt',name:'日期时间转换',icon:'T',desc:'时间戳与日期互转'},
+          {id:'case',name:'大小写转换',icon:'A',desc:'多种命名格式转换'}
+        ]},
+        {name:'Web 工具',color:'o',tools:[
+          {id:'jwt',name:'JWT 解析器',icon:'J',desc:'解析JWT令牌结构'},
+          {id:'dev',name:'设备信息',icon:'D',desc:'浏览器/设备详细信息'},
+          {id:'urlp',name:'URL 分析器',icon:'L',desc:'拆解URL各组件'},
+          {id:'http',name:'HTTP 状态码',icon:'S',desc:'HTTP状态码速查表'}
+        ]},
+        {name:'媒体生成',color:'p',tools:[
+          {id:'qr',name:'二维码生成器',icon:'Q',desc:'文本/URL二维码'},
+          {id:'wifi',name:'WiFi 二维码',icon:'W',desc:'WiFi连接二维码'}
+        ]},
+        {name:'开发者工具',color:'y',tools:[
+          {id:'json',name:'JSON 格式化',icon:'{',desc:'JSON美化/压缩/转义'},
+          {id:'regex',name:'Regex 测试器',icon:'R',desc:'正则表达式匹配'},
+          {id:'cron',name:'Crontab 生成',icon:'C',desc:'Cron表达式可视化'},
+          {id:'calc',name:'科学计算器',icon:'=',desc:'数学表达式计算'}
+        ]},
+        {name:'网络工具',color:'c',tools:[
+          {id:'subnet',name:'子网计算器',icon:'N',desc:'IPv4子网划分计算'},
+          {id:'mac',name:'MAC 地址查找',icon:'P',desc:'MAC地址厂商查询'},
+          {id:'ula',name:'IPv6 ULA 生成',icon:'V',desc:'生成唯一本地地址'}
+        ]},
+        {name:'文本工具',color:'g',tools:[
+          {id:'tstat',name:'文本统计',icon:'Z',desc:'字符/词/行统计'},
+          {id:'diff',name:'文本比较',icon:'F',desc:'逐字符差异对比'},
+          {id:'lorem',name:'Lorem Ipsum',icon:'I',desc:'占位文本生成'}
+        ]}
+      ]
+    };
+  },
+  computed:{
+    filteredCategories:function(){
+      var q=this.searchQuery.toLowerCase();
+      if(!q)return this.categories;
+      return this.categories.map(function(c){
+        return {name:c.name,color:c.color,tools:c.tools.filter(function(t){return t.name.toLowerCase().indexOf(q)>=0||t.desc.toLowerCase().indexOf(q)>=0})};
+      }).filter(function(c){return c.tools.length>0});
+    },
+    toolCount:function(){return this.categories.reduce(function(s,c){return s+c.tools.length},0)},
+    currentToolName:function(){
+      if(!this.currentTool)return '';
+      for(var i=0;i<this.categories.length;i++){
+        var c=this.categories[i];
+        for(var j=0;j<c.tools.length;j++){if(c.tools[j].id===this.currentTool)return c.tools[j].name;}
+      }
+      return '';
+    },
+    filteredHTTP:function(){
+      var q=this.http.search.toLowerCase();
+      if(!q)return HTTP_CODES;
+      return HTTP_CODES.filter(function(s){return String(s.c).indexOf(q)>=0||s.n.toLowerCase().indexOf(q)>=0||s.d.indexOf(q)>=0});
+    }
+  },
+  methods:{
+    openTool:function(id){this.currentTool=id;this.sidebarOpen=false},
+    toggleTheme:function(){this.isLight=!this.isLight;document.documentElement.classList.toggle('light',this.isLight)},
+    showToast:function(t){var self=this;this.toast.text=t;this.toast.show=true;setTimeout(function(){self.toast.show=false},2000)},
+    cp:function(text,key){var self=this;navigator.clipboard.writeText(text).then(function(){self[key].c=true;self.showToast('已复制到剪贴板');setTimeout(function(){self[key].c=false},2000)})},
+    cpSingle:function(text){var self=this;navigator.clipboard.writeText(text).then(function(){self.showToast('已复制')})},
+    genUUID:function(){var r=[];for(var i=0;i<this.uuid.count;i++){if(this.uuid.v===4){r.push(crypto.randomUUID())}else{var ts=Date.now().toString(16).padStart(12,'0');var rnd='';for(var j=0;j<16;j++)rnd+=Math.floor(Math.random()*16).toString(16);r.push(ts.slice(0,8)+'-'+ts.slice(8,12)+'-1'+rnd.slice(0,3)+'-'+((parseInt(rnd[3],16)&0x3)|0x8).toString(16)+rnd.slice(4,7)+'-'+rnd.slice(7,19))}}this.uuid.result=r.join('\n')},
+    genULID:function(){var C='0123456789ABCDEFGHJKMNPQRSTVWXYZ';var r=[];for(var i=0;i<this.ulid.count;i++){var ts=Date.now()+i;var e='';for(var j=0;j<10;j++){e=C[ts%32]+e;ts=Math.floor(ts/32)}var rn='';for(var j=0;j<16;j++)rn+=C[Math.floor(Math.random()*32)];r.push(e+rn)}this.ulid.result=r.join('\n')},
+    genToken:function(){var cs={a:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',h:'0123456789abcdef',s:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'};var chars=cs[this.token.cs];var r=[];for(var i=0;i<this.token.cnt;i++){var a=new Uint32Array(this.token.len);crypto.getRandomValues(a);r.push(Array.from(a,function(v){return chars[v%chars.length]}).join(''))}this.token.result=r.join('\n')},
+    calcHash:function(){if(!this.hash.input)return;var s=this.hash.input;try{this.hash.result={'MD5':CryptoJS.MD5(s).toString(),'SHA1':CryptoJS.SHA1(s).toString(),'SHA256':CryptoJS.SHA256(s).toString(),'SHA512':CryptoJS.SHA512(s).toString()}}catch(e){this.hash.result={'Error':'CryptoJS未加载'}}},
+    calcHMAC:function(){if(!this.hmac.key||!this.hmac.msg)return;try{this.hmac.result=CryptoJS[this.hmac.algo](this.hmac.msg,this.hmac.key).toString()}catch(e){this.hmac.result='CryptoJS未加载'}},
+    analyzePwd:function(){var p=this.pwd.input;if(!p){this.pwd.score=0;this.pwd.level='';return}var s=0;var ck=[];if(p.length>=8){s++;ck.push('长度>=8')}else ck.push('长度<8');if(p.length>=12)s++;if(p.length>=16)s++;if(/[a-z]/.test(p)){s++;ck.push('小写字母')}if(/[A-Z]/.test(p)){s++;ck.push('大写字母')}if(/[0-9]/.test(p)){s++;ck.push('数字')}if(/[^a-zA-Z0-9]/.test(p)){s++;ck.push('特殊字符')}if(/(.)\1{2,}/.test(p)){s--;ck.push('连续重复')}s=Math.max(0,Math.min(5,s));var lv=['非常弱','弱','一般','较强','强','非常强'];var co=['var(--rd)','var(--rd)','var(--or)','var(--yl)','var(--ac)','var(--ac)'];var tc=['tag-o','tag-o','tag-o','tag-o','tag-g','tag-g'];this.pwd.score=s;this.pwd.level=lv[s];this.pwd.col=co[s];this.pwd.tc=tc[s];this.pwd.details=ck.map(function(c){return '  '+c}).join('\n')},
+    genBIP39:function(){var a=new Uint32Array(this.bip39.count);crypto.getRandomValues(a);var self=this;this.bip39.result=Array.from(a,function(v){return BIP39[v%BIP39.length]}).join(' ')},
+    b64Enc:function(){try{this.b64.output=btoa(unescape(encodeURIComponent(this.b64.input)))}catch(e){this.b64.output='Error'}},
+    b64Dec:function(){try{this.b64.input=decodeURIComponent(escape(atob(this.b64.output)))}catch(e){this.b64.input='Error'}},
+    urlEnc:function(){this.url.result=encodeURI(this.url.input)},
+    urlDec:function(){try{this.url.result=decodeURI(this.url.input)}catch(e){this.url.result='Error'}},
+    urlCompEnc:function(){this.url.result=encodeURIComponent(this.url.input)},
+    urlCompDec:function(){try{this.url.result=decodeURIComponent(this.url.input)}catch(e){this.url.result='Error'}},
+    convertDT:function(){var v=this.dt.input.trim();var d;if(/^\d{10}$/.test(v))d=new Date(parseInt(v)*1000);else if(/^\d{13}$/.test(v))d=new Date(parseInt(v));else d=new Date(v);if(isNaN(d.getTime())){this.dt.result='无效输入';return}var z=function(n){return n<10?'0'+n:''+n};this.dt.result='时间戳(秒): '+Math.floor(d.getTime()/1000)+'\n时间戳(毫秒): '+d.getTime()+'\nISO 8601: '+d.toISOString()+'\nUTC: '+d.toUTCString()+'\n本地: '+d.toLocaleString('zh-CN')+'\n日期: '+d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+'\n时间: '+z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds())},
+    titleCase:function(s){return s.replace(/\w\S*/g,function(t){return t[0].toUpperCase()+t.slice(1).toLowerCase()})},
+    camelCase:function(s){return s.replace(/[^a-zA-Z0-9]+(.)/g,function(_,c){return c.toUpperCase()}).replace(/^[A-Z]/,function(c){return c.toLowerCase()})},
+    snakeCase:function(s){return s.replace(/([A-Z])/g,'_$1').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').toLowerCase()},
+    kebabCase:function(s){return this.snakeCase(s).replace(/_/g,'-')},
+    constCase:function(s){return this.snakeCase(s).toUpperCase()},
+    parseJWT:function(){try{var parts=this.jwt.input.trim().split('.');if(parts.length<2)throw new Error('无效JWT');this.jwt.hdr=JSON.stringify(JSON.parse(atob(parts[0].replace(/-/g,'+').replace(/_/g,'/'))),null,2);this.jwt.pay=JSON.stringify(JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/'))),null,2);this.jwt.sig=parts[2]||'(无签名)';var p=JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));if(p.exp){var e=new Date(p.exp*1000);this.jwt.exp=e.toLocaleString('zh-CN')+(e<new Date()?' (已过期)':' (有效)')}else this.jwt.exp='无 exp 字段'}catch(e){this.jwt.hdr='';this.jwt.pay='解析错误: '+e.message;this.jwt.sig='';this.jwt.exp=''}},
+    getDev:function(){var u=navigator.userAgent;this.dev.info='平台: '+navigator.platform+'\n语言: '+navigator.language+'\n屏幕: '+screen.width+' x '+screen.height+'\n视口: '+window.innerWidth+' x '+window.innerHeight+'\n颜色深度: '+screen.colorDepth+'bit\n像素比: '+window.devicePixelRatio+'x\n在线: '+(navigator.onLine?'是':'否')+'\nCookie: '+(navigator.cookieEnabled?'启用':'禁用')+'\n触控: '+(navigator.maxTouchPoints>0?navigator.maxTouchPoints+'点':'无')+'\n\nUser-Agent:\n'+u},
+    parseURL:function(){try{var u=new URL(this.urlp.input);this.urlp.result='协议: '+u.protocol+'\n主机名: '+u.hostname+'\n端口: '+(u.port||'(默认)')+'\n路径: '+u.pathname+'\n搜索参数: '+(u.search||'(无)')+'\n哈希: '+(u.hash||'(无)')+'\nOrigin: '+u.origin+'\n用户名: '+(u.username||'(无)')+'\n密码: '+(u.password||'(无)')}catch(e){this.urlp.result='解析错误: '+e.message}},
+    genQR:function(){var el=document.getElementById('qr-out');el.innerHTML='';el.style.display='none';if(!this.qr.text)return;if(typeof QRCode==='undefined'){el.innerHTML='<div style="color:var(--rd)">QRCode库未加载，请检查网络</div>';el.style.display='inline-block';return}el.style.display='inline-block';new QRCode(el,{text:this.qr.text,width:this.qr.size,height:this.qr.size})},
+    genWifiQR:function(){var el=document.getElementById('wifi-out');el.innerHTML='';el.style.display='none';if(!this.wifi.ssid)return;if(typeof QRCode==='undefined'){el.innerHTML='<div style="color:var(--rd)">QRCode库未加载</div>';el.style.display='inline-block';return}el.style.display='inline-block';var d='WIFI:T:'+this.wifi.sec+';S:'+this.wifi.ssid+';'+(this.wifi.sec!=='nopass'?'P:'+this.wifi.pwd+';;':';;');new QRCode(el,{text:d,width:200,height:200})},
+    jsonFmt:function(){try{this.jf.result=JSON.stringify(JSON.parse(this.jf.input),null,2)}catch(e){this.jf.result='JSON错误: '+e.message}},
+    jsonMin:function(){try{this.jf.result=JSON.stringify(JSON.parse(this.jf.input))}catch(e){this.jf.result='JSON错误: '+e.message}},
+    jsonEsc:function(){try{this.jf.result=JSON.stringify(JSON.parse(this.jf.input)).replace(/"/g,'\\"')}catch(e){this.jf.result='JSON错误: '+e.message}},
+    togFlag:function(f){var i=this.rgx.f.indexOf(f);this.rgx.f=i>=0?this.rgx.f.replace(f,''):this.rgx.f+f},
+    testRgx:function(){this.rgx.err='';this.rgx.res=null;if(!this.rgx.pat||!this.rgx.txt)return;try{var re=new RegExp(this.rgx.pat,this.rgx.f);var ms=[];var m;if(this.rgx.f.indexOf('g')>=0){while((m=re.exec(this.rgx.txt))!==null){ms.push({v:m[0],i:m.index});if(m.index===re.lastIndex)re.lastIndex++}}else{m=re.exec(this.rgx.txt);if(m)ms.push({v:m[0],i:m.index})}var self=this;this.rgx.res={cnt:ms.length,matches:ms.map(function(m,j){return '匹配 '+(j+1)+': "'+m.v+'" (位置 '+m.i+')'}).join('\n')}}catch(e){this.rgx.err='正则错误: '+e.message}},
+    cronQ:function(expr){var p=expr.split(' ');this.cron.m=p[0];this.cron.h=p[1];this.cron.d=p[2];this.cron.mo=p[3];this.cron.w=p[4];this.cron.expr=expr;this.parseCron()},
+    parseCron:function(){var expr=this.cron.expr;if(!expr.trim())expr=this.cron.m+' '+this.cron.h+' '+this.cron.d+' '+this.cron.mo+' '+this.cron.w;var p=expr.trim().split(/\s+/);if(p.length!==5){this.cron.result='错误: 需要5个字段';return}var r='分钟: '+p[0]+'\n小时: '+p[1]+'\n日: '+p[2]+'\n月: '+p[3]+'\n星期: '+p[4]+'\n';var rd='在';if(p[3]!=='*')rd+=' '+p[3]+'月';if(p[2]!=='*')rd+=' '+p[2]+'日';if(p[4]!=='*')rd+=' 星期'+p[4];if(p[1]!=='*')rd+=' '+p[1]+'时';if(p[0]!=='*')rd+=' '+p[0]+'分';if(rd==='在')rd='每分钟';r+='\n含义: '+rd+'\n表达式: '+expr;this.cron.result=r},
+    calcSub:function(){try{var parts=this.sub.ip.split('.');if(parts.length!==4)throw new Error('无效IP');var mask=this.sub.mask;if(mask<0||mask>32)throw new Error('掩码0-32');var ipN=(parseInt(parts[0])<<24|parseInt(parts[1])<<16|parseInt(parts[2])<<8|parseInt(parts[3]))>>>0;var mN=mask===0?0:(0xFFFFFFFF<<(32-mask))>>>0;var net=(ipN&mN)>>>0;var bcast=(net|~mN)>>>0;var f=mask<31?(net+1)>>>0:net;var l=mask<31?(bcast-1)>>>0:bcast;var fmt=function(n){return [(n>>>24)&0xFF,(n>>>16)&0xFF,(n>>>8)&0xFF,n&0xFF].join('.')};var usable=mask<31?Math.pow(2,32-mask)-2:mask===32?1:0;this.sub.result='网络地址: '+fmt(net)+'/'+mask+'\n广播地址: '+fmt(bcast)+'\n第一个可用: '+fmt(f)+'\n最后可用: '+fmt(l)+'\n可用主机数: '+usable+'\n掩码: '+fmt(mN)}catch(e){this.sub.result='错误: '+e.message}},
+    genMAC:function(){var b=new Uint8Array(6);crypto.getRandomValues(b);b[0]=(b[0]&0xFE)|0x02;var s=this;this.mac.input=Array.from(b,function(x){return x.toString(16).padStart(2,'0')}).join(':').toUpperCase();this.lookupMAC()},
+    lookupMAC:function(){var mac=this.mac.input.replace(/-/g,':').toUpperCase();var p=mac.substring(0,8);var v=MAC_V[p]||MAC_V[p.substring(0,5)+':'+p.substring(6)]||null;this.mac.result='MAC 地址: '+mac+'\nOUI 前缀: '+p+'\n厂商: '+(v||'未识别')+'\n类型: '+(parseInt(mac.substring(0,2),16)&1?'组播':'单播')+'\n本地管理: '+(parseInt(mac.substring(0,2),16)&2?'是':'否')},
+    calcB:function(b){if(b==='C'){this.calc.input='';this.calc.result='';return}if(b==='<-'){this.calc.input=this.calc.input.slice(0,-1);return}if(b==='='){this.evalCalc();return}this.calc.input+=b},
+    evalCalc:function(){try{var s=this.calc.input.replace(/[^0-9+\-*/().%]/g,'');if(!s)return;this.calc.result=String(Function('"use strict";return('+s+')')())}catch(e){this.calc.result='计算错误'}},
+    calcTS:function(){var t=this.ts.input;if(!t)return;var w=t.trim()?t.trim().split(/\s+/).length:0;var cn=t.replace(/\s/g,'').length;var ln=t.split('\n').length;var st=t.split(/[.!?。！？]+/).filter(function(s){return s.trim()}).length;var pg=t.split(/\n\s*\n/).filter(function(s){return s.trim()}).length;var zh=(t.match(/[一-鿿]/g)||[]).length;this.ts.result={'字符':t.length,'无空格':cn,'单词':w,'中文字符':zh,'行数':ln,'句子':st,'段落':pg}},
+    cmpText:function(){var a=this.df.a,b=this.df.b;if(!a&&!b)return;if(a===b){this.df.result='文本完全相同';return}var la=a.split('\n'),lb=b.split('\n');var mx=Math.max(la.length,lb.length);var r='';var d=0;for(var i=0;i<mx;i++){var x=la[i]||'',y=lb[i]||'';if(x!==y){d++;r+='行 '+(i+1)+':\n  - '+(x||'(空)')+'\n  + '+(y||'(空)')+'\n'}}this.df.result=d+' 处差异\n\n'+r},
+    genLorem:function(){var base='Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');var ps=[];for(var i=0;i<this.lorem.n;i++){var ws=[];for(var j=0;j<30+Math.floor(Math.random()*40);j++)ws.push(base[(i*7+j)%base.length]);ps.push(ws.join(' '))}this.lorem.result=ps.join('\n\n')},
+    genULA:function(){var b=new Uint8Array(8);crypto.getRandomValues(b);b[0]=0xFD;var g=[];for(var i=0;i<8;i+=2)g.push(((b[i]<<8)|b[i+1]).toString(16));this.ula.result=g.join(':')},
+    updateClock:function(){this.dt.now=new Date().toLocaleString('zh-CN',{hour12:false})}
+  },
+  mounted:function(){
+    this.updateClock();setInterval(this.updateClock,1000);
+    try{var f=localStorage.getItem('ittools_fav');if(f)this.favorites=JSON.parse(f)}catch(e){}
+  }
+}).mount('#app');
+}
+
+// Try to init immediately, retry if Vue not loaded
+if(typeof Vue!=='undefined'){initApp()}else{window.addEventListener('load',function(){setTimeout(initApp,200)})}
+})();
+</script>
+</body>
+</html>
